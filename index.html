@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="pagetitle">Vocabulary homework</title>
+<style>
+  :root{
+    --paper:#efe6d2; --paper2:#e6d9bb; --card:#f7f0de;
+    --ink:#2a2117; --ink2:#6b5d44; --stem:#b3a387;
+    --gold:#a8741f; --gold2:#c9982f; --seal:#8c2f24; --green:#3f6f3a; --blue:#2f5a7a;
+    --serif:"Iowan Old Style","Palatino Linotype","Book Antiqua",Georgia,serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:var(--serif); color:var(--ink); min-height:100vh;
+    background:radial-gradient(120% 120% at 50% 0%, #f4ecd8 0%, var(--paper) 45%, var(--paper2) 100%);
+    background-attachment:fixed; display:flex; align-items:flex-start; justify-content:center; padding:28px 16px 90px;}
+  .wrap{width:100%; max-width:900px}
+  .topbar{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; flex-wrap:wrap}
+  .brand{font-variant:small-caps; letter-spacing:2px; color:var(--gold); font-size:15px; font-weight:700}
+  .homebtn{background:transparent;border:1px solid var(--gold);color:var(--gold);border-radius:30px;padding:5px 14px;font-size:13px;font-variant:small-caps;letter-spacing:1px}
+  .homebtn:hover{background:#fdf4df}
+  .screen{display:none; animation:fade .4s ease}
+  .screen.active{display:block}
+  @keyframes fade{from{opacity:0; transform:translateY(8px)}to{opacity:1; transform:none}}
+  h1{font-size:36px; margin:.1em 0; line-height:1.1}
+  h2{font-size:24px; margin:.2em 0 .5em}
+  h3{margin:.4em 0 .3em}
+  p{font-size:17px; line-height:1.55}
+  .panel{background:var(--card); border:1px solid #d8c79e; border-radius:10px;
+    padding:22px 26px; box-shadow:0 10px 30px rgba(60,45,20,.12), inset 0 0 0 1px rgba(255,255,255,.4); margin-bottom:16px}
+  .center{text-align:center}
+  .small{font-size:14.5px; color:var(--ink2)}
+  .ital{font-style:italic; color:var(--ink2)}
+  button{font-family:var(--serif); cursor:pointer}
+  .btn{background:var(--ink); color:var(--paper); border:none; border-radius:8px;
+    padding:11px 22px; font-size:16px; letter-spacing:.5px; transition:transform .1s, background .2s}
+  .btn:hover{background:#3c3120; transform:translateY(-1px)}
+  .btn:disabled{opacity:.4; cursor:not-allowed; transform:none}
+  .btn.gold{background:var(--gold)} .btn.gold:hover{background:#bb8424}
+  .btn.seal{background:var(--seal)} .btn.seal:hover{background:#a53a2d}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid #c9b787} .btn.ghost:hover{background:#fdf4df}
+  .btn.sm{padding:7px 14px;font-size:14px}
+  .tag{display:inline-block; font-variant:small-caps; letter-spacing:2px; font-size:13px; color:var(--gold); border:1px solid var(--gold); border-radius:30px; padding:3px 12px; margin-bottom:10px}
+  .tag.seal{color:var(--seal);border-color:var(--seal)}
+  .feedback{min-height:24px; font-size:16px; margin-top:10px; font-weight:600; line-height:1.4}
+  .feedback .why{font-weight:400;color:var(--ink2);font-size:15px;display:block;margin-top:3px}
+  .ok{color:var(--green)} .no{color:var(--seal)}
+  hr.r{border:none;border-top:1px solid #d8c79e;margin:18px 0}
+  .end{color:var(--seal); font-weight:700}
+  .lat{font-weight:700;color:var(--seal)}
+  input[type=text]{font-family:var(--serif); font-size:18px; padding:9px 11px; width:260px; max-width:100%;
+    border:1px solid #c9b787; border-radius:8px; background:#fffaf0; color:var(--ink); letter-spacing:.5px}
+  input:focus{outline:2px solid var(--gold2); outline-offset:1px}
+  .q{background:#fbf6e7; border:1px solid #d8c79e; border-radius:9px; padding:16px 18px; margin:12px 0}
+  .q .prompt{font-size:20px; margin-bottom:12px}
+  .q .prompt b{color:var(--seal)}
+  .bigword{font-size:40px;font-weight:700;color:var(--seal);text-align:center;margin:6px 0 4px;letter-spacing:1px}
+  .bigword small{font-size:16px;color:var(--ink2);font-weight:400;letter-spacing:0}
+  .opts{display:grid; gap:9px; margin-top:6px}
+  .opts.two{grid-template-columns:1fr 1fr}
+  @media(max-width:560px){.opts.two{grid-template-columns:1fr}}
+  .opt{text-align:left; background:#fffaf0; border:1px solid #c9b787; border-radius:8px; padding:11px 14px; font-size:17px; transition:.15s}
+  .opt:hover{border-color:var(--gold); background:#fdf4df}
+  .opt.correct{background:#e4efdc; border-color:var(--green); color:var(--green); font-weight:700}
+  .opt.wrong{background:#f3e0dd; border-color:var(--seal); color:var(--seal)}
+  .opt:disabled{cursor:default}
+  .rowbtn{display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:16px}
+  .prog{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--ink2);margin-bottom:6px;font-variant:small-caps;letter-spacing:1px}
+  .bar{height:8px;background:#e6d9bb;border-radius:6px;overflow:hidden;margin-bottom:12px}
+  .bar i{display:block;height:100%;background:var(--gold);width:0;transition:width .3s}
+  .bignum{font-size:54px; color:var(--gold); font-weight:700; text-align:center; margin:6px 0}
+  .fine{font-size:13px; color:var(--ink2); margin-top:24px; text-align:center; font-variant:small-caps; letter-spacing:1px}
+  .cloudBadge{position:fixed;bottom:10px;right:10px;max-width:70vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:9000;background:var(--gold);color:#f7f0de;font-family:var(--serif);font-size:12px;padding:5px 11px;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,.3);cursor:pointer}
+
+  /* hub */
+  .hubhead{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+  .ring{width:110px;height:110px;flex:none}
+  .ring svg{width:110px;height:110px}
+  .hubstats{flex:1;min-width:220px}
+  .hubstats .st{display:inline-block;margin:4px 14px 4px 0;font-size:15px}
+  .hubstats .st b{color:var(--seal);font-size:20px}
+  .phase{font-variant:small-caps;letter-spacing:2px;color:var(--gold);font-weight:700;font-size:14px;margin:18px 0 8px;border-bottom:1px solid #d8c79e;padding-bottom:4px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+  .acard{background:#fbf6e7;border:1px solid #d8c79e;border-radius:10px;padding:14px 15px;text-align:left;position:relative;transition:.15s;display:flex;flex-direction:column;gap:5px;min-height:118px}
+  .acard:hover{border-color:var(--gold);background:#fdf4df;transform:translateY(-2px);box-shadow:0 6px 16px rgba(60,45,20,.12)}
+  .acard .ic{font-size:22px}
+  .acard .t{font-weight:700;font-size:17px;color:var(--seal)}
+  .acard .d{font-size:13.5px;color:var(--ink2);line-height:1.35;flex:1}
+  .acard .best{font-size:13px;color:var(--ink2);font-variant:small-caps;letter-spacing:1px}
+  .acard .best b{color:var(--green);font-size:15px}
+  .acard .tick{position:absolute;top:10px;right:12px;width:22px;height:22px;border-radius:50%;background:var(--green);color:#fff;font-size:13px;display:none;align-items:center;justify-content:center}
+  .acard.done .tick{display:flex}
+  .acard.test{background:#fff3ee;border-color:#d9a79e}
+  .acard.test .t{color:var(--seal)}
+
+  /* vocab list */
+  table.voc{border-collapse:collapse;width:100%;font-size:15.5px}
+  table.voc th,table.voc td{border:1px solid #d8c79e;padding:7px 9px;text-align:left;vertical-align:top}
+  table.voc th{background:#efe2c4;font-variant:small-caps;letter-spacing:1px;font-size:13.5px}
+  table.voc td.l{font-weight:700;color:var(--seal);white-space:nowrap}
+  table.voc td .pos{font-size:12px;color:var(--ink2);font-style:italic;display:block}
+  table.voc td .der{font-size:13.5px;color:var(--blue)}
+
+  /* flashcards */
+  .fc{perspective:1200px;max-width:520px;margin:10px auto}
+  .fcin{display:grid;width:100%;min-height:250px;transition:transform .5s;transform-style:preserve-3d;cursor:pointer}
+  .fc.flip .fcin{transform:rotateY(180deg)}
+  .face{grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:#fffaf0;border:2px solid var(--gold);border-radius:14px;padding:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:0 8px 24px rgba(60,45,20,.15)}
+  .face.back{transform:rotateY(180deg);background:#fdf4df}
+  .face .w{font-size:44px;font-weight:700;color:var(--seal)}
+  .face .m{font-size:28px;font-weight:700;color:var(--green)}
+  .face .h{font-size:14.5px;color:var(--ink2);margin-top:10px;line-height:1.45}
+  .face .h b{color:var(--blue)}
+  .face .hint{font-size:13px;color:var(--ink2);margin-top:14px;font-variant:small-caps;letter-spacing:1px}
+
+  /* matching */
+  .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px 28px}
+  @media(max-width:560px){ .mgrid{gap:8px 10px} .mt{font-size:15px;padding:10px 10px} .testhead>span:first-child{display:none} .face .h{font-size:13.5px} }
+  @media(prefers-reduced-motion:reduce){ .timerbig.warn,.testhead .tm.warn{animation:none} .fcin{transition:none} .screen{animation:none} }
+  .mcol{display:flex;flex-direction:column;gap:8px}
+  .mt{background:#fffaf0;border:1px solid #c9b787;border-radius:8px;padding:12px 14px;font-size:17px;text-align:left;transition:.15s;min-height:48px}
+  .mt.lat{font-weight:700;color:var(--seal)}
+  .mt:hover{border-color:var(--gold);background:#fdf4df}
+  .mt.sel{border-color:var(--gold);background:#f7e6bd;box-shadow:0 0 0 3px rgba(168,116,31,.2)}
+  .mt.paired{background:#e4efdc;border-color:var(--green);color:var(--green);opacity:.75;pointer-events:none}
+  .mt.shake{animation:shake .35s}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+  /* sorter */
+  .chips{display:flex;flex-wrap:wrap;gap:8px;min-height:44px;padding:8px;border:1px dashed #c9b787;border-radius:9px;background:#fffaf0;margin-bottom:12px}
+  .chip{background:#fff;border:1px solid var(--gold);color:var(--seal);font-weight:700;border-radius:20px;padding:6px 13px;font-size:16px}
+  .chip.sel{background:var(--gold);color:#fff}
+  .bins{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  @media(max-width:560px){.bins{grid-template-columns:1fr}}
+  .bin{display:block;width:100%;text-align:left;font-family:var(--serif);color:var(--ink);border:2px solid #c9b787;border-radius:10px;padding:10px;min-height:90px;background:#fbf6e7;cursor:pointer;transition:.15s}
+  .bin:hover{border-color:var(--gold);background:#fdf4df}
+  .bin h4{margin:0 0 6px;font-size:14px;font-variant:small-caps;letter-spacing:1px;color:var(--gold)}
+  .bin .chip{font-size:14px;padding:4px 10px;margin:2px}
+  .bin .chip.ok{border-color:var(--green);color:var(--green)} .bin .chip.bad{border-color:var(--seal);color:var(--seal);background:#f3e0dd}
+
+  /* anagram */
+  .tiles{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:10px 0 14px}
+  .tile{width:42px;height:46px;border:2px solid var(--gold);border-radius:8px;background:#fffaf0;font-size:24px;font-weight:700;color:var(--seal);display:flex;align-items:center;justify-content:center}
+
+  /* sprint */
+  .timerbig{font-size:34px;font-weight:700;color:var(--seal);text-align:center;font-variant-numeric:tabular-nums}
+  .timerbig.warn{color:#c0392b;animation:pulse 1s infinite}
+  @keyframes pulse{50%{opacity:.5}}
+
+  /* test */
+  .testhead{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:space-between;align-items:center;background:var(--seal);color:#f7f0de;border-radius:10px;padding:10px 18px;margin-bottom:14px;font-variant:small-caps;letter-spacing:1px}
+  .testhead .tm{font-size:24px;font-variant-numeric:tabular-nums;font-weight:700}
+  .testhead .tm.warn{color:#ffd0c4;animation:pulse 1s infinite}
+  .results{width:100%;border-collapse:collapse;font-size:15px;margin-top:10px}
+  .results th,.results td{border:1px solid #d8c79e;padding:6px 9px;text-align:left}
+  .results th{background:#efe2c4;font-variant:small-caps;letter-spacing:1px;font-size:13px}
+  .results tr.bad td{background:#f8e7e3}
+  .results tr.good td{background:#eef5ea}
+  .attempts{font-size:14px;color:var(--ink2)}
+  .attempts span{display:inline-block;background:#efe2c4;border-radius:20px;padding:2px 10px;margin:2px 4px 2px 0}
+  .warnbox{background:#fff3ee;border:1px solid #d9a79e;border-radius:9px;padding:12px 16px;font-size:15px;color:#6b2a22;margin:12px 0}
+  .copybox{background:#fffaf0; border:2px dashed var(--gold); border-radius:10px; padding:14px 18px; margin:14px 0}
+  .copybox .lbl{font-variant:small-caps; letter-spacing:2px; font-size:13px; color:var(--gold); font-weight:700; display:flex; align-items:center; gap:8px}
+  .copybox .lbl:before{content:"✎"; font-size:18px}
+  .wordlist-inline{font-size:15px;line-height:1.7}
+  .wordlist-inline b{color:var(--seal)}
+  .streak{font-size:14px;color:var(--gold);font-weight:700;margin-left:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand" id="brand">✦ Vocabulary ✦</div>
+    <button class="homebtn" id="homebtn" onclick="goHome()" style="display:none">⌂ &nbsp;Menu</button>
+  </div>
+
+  <!-- HUB -->
+  <section class="screen active" id="s-hub">
+    <div class="panel">
+      <div class="tag" id="hubtag"></div>
+      <h1 id="hubtitle"></h1>
+      <p class="ital" id="hubsub"></p>
+      <div class="hubhead" style="margin-top:12px">
+        <div class="ring" id="ring"></div>
+        <div class="hubstats" id="hubstats"></div>
+      </div>
+      <p class="small" style="margin-top:12px">How to use this: work down the page — <b>Learn</b> first, then a good spread of <b>Practise</b> activities (do at least four), then sit the <b>Test</b>. Every activity is saved for your teacher: how many questions you tried and what percentage you got right. Do as many rounds as you like — your best score counts.</p>
+    </div>
+
+    <div class="panel">
+      <div class="phase">① Learn</div>
+      <div class="cards" id="cards-learn"></div>
+      <div class="phase">② Practise</div>
+      <div class="cards" id="cards-practise"></div>
+      <div class="phase">③ Test</div>
+      <div class="cards" id="cards-test"></div>
+    </div>
+    <div class="fine" id="footer"></div>
+  </section>
+
+  <!-- VOCAB LIST -->
+  <section class="screen" id="s-list">
+    <div class="panel">
+      <div class="tag">Learn · The list</div>
+      <h2 id="listtitle"></h2>
+      <p class="small">Read each word aloud. The <b>derivatives</b> column is your secret weapon: an English word that grew from the Latin gives you a hook to hang the meaning on. Prepositions marked <b>+ acc</b> are followed by the accusative case.</p>
+      <div style="overflow-x:auto"><table class="voc" id="voctable"></table></div>
+      <div class="copybox"><div class="lbl">Copy into your vocab book</div>
+        <p class="small" style="margin:6px 0 0" id="copyinstr"></p></div>
+      <div class="rowbtn"><button class="btn gold" onclick="startFlash()">Now try the flashcards &nbsp;›</button><button class="btn ghost" onclick="goHome()">Back to menu</button></div>
+    </div>
+  </section>
+
+  <!-- FLASHCARDS -->
+  <section class="screen" id="s-flash">
+    <div class="panel">
+      <div class="tag">Learn · Flashcards</div>
+      <div class="prog"><span id="flash-prog"></span><span id="flash-known"></span></div>
+      <div class="bar"><i id="flash-bar"></i></div>
+      <div id="flash-area"></div>
+      <div class="rowbtn" style="justify-content:center" id="flash-btns"></div>
+      <div id="flash-summary"></div>
+    </div>
+  </section>
+
+  <!-- GENERIC QUIZ SCREEN (MC / type / anagram / derivative / context) -->
+  <section class="screen" id="s-quiz">
+    <div class="panel">
+      <div class="tag" id="quiz-tag"></div>
+      <h2 id="quiz-title"></h2>
+      <p class="small" id="quiz-blurb"></p>
+      <div class="prog"><span id="quiz-prog"></span><span id="quiz-score"></span></div>
+      <div class="bar"><i id="quiz-bar"></i></div>
+      <div id="quiz-area"></div>
+      <div id="quiz-summary"></div>
+    </div>
+  </section>
+
+  <!-- MATCH -->
+  <section class="screen" id="s-match">
+    <div class="panel">
+      <div class="tag">Practise · Match-up</div>
+      <h2>Pair the Latin with its meaning</h2>
+      <p class="small">Click a Latin word, then its English meaning. <span id="matchrounds">Four rounds of five.</span> A wrong pairing costs you the point for that Latin word, so think before you click.</p>
+      <div class="prog"><span id="match-prog"></span><span id="match-score"></span></div>
+      <div class="bar"><i id="match-bar"></i></div>
+      <div id="match-area"></div>
+      <div id="match-summary"></div>
+    </div>
+  </section>
+
+  <!-- SORT -->
+  <section class="screen" id="s-sort">
+    <div class="panel">
+      <div class="tag">Practise · Sort the words</div>
+      <h2>Which box does each word belong in?</h2>
+      <p class="small">Click a word, then click the box it belongs in. You need to know what each word <em>means</em> to sort it.</p>
+      <div class="chips" id="sort-chips"></div>
+      <div class="bins" id="sort-bins"></div>
+      <div class="feedback" id="sort-fb" aria-live="polite"></div>
+      <div class="rowbtn"><button class="btn gold" id="sort-check" onclick="checkSort()" disabled>Check my sorting</button><button class="btn ghost" onclick="goHome()">Back to menu</button></div>
+      <div id="sort-summary"></div>
+    </div>
+  </section>
+
+  <!-- SPRINT -->
+  <section class="screen" id="s-sprint">
+    <div class="panel">
+      <div class="tag">Practise · Beat the clock</div>
+      <h2>Sixty seconds. How many can you get?</h2>
+      <p class="small">A Latin word appears with three meanings; click the right one as fast as you can. Wrong answers count against your accuracy, so speed <em>and</em> care. Words you have got wrong elsewhere come round more often.</p>
+      <div class="timerbig" id="sprint-timer" aria-live="off">60</div>
+      <div id="sprint-area" class="center"><button class="btn seal" onclick="beginSprint()">Start the clock</button></div>
+      <div id="sprint-summary"></div>
+    </div>
+  </section>
+
+  <!-- TEST -->
+  <section class="screen" id="s-test">
+    <div id="test-intro">
+      <div class="panel">
+        <div class="tag seal">Test mode · Test conditions</div>
+        <h2 id="testtitle">Vocabulary test</h2>
+        <p>This works like the paper test in class. <b>All <span class="nwords"></span> words</b>, in a random order, Latin to English. You type the meaning and press <b>Next</b>. You cannot go back, there are no hints, and you see no marks until the end.</p>
+        <div class="warnbox">⏱ &nbsp;You have <b><span id="testmins">10</span> minutes</b>. The test hands itself in when the clock runs out. Spelling counts — an answer with a spelling mistake is marked wrong, just as it would be on paper. Give <b>one</b> meaning per word — any meaning on the list is accepted, but hedging ("god or goddess") scores nothing. If a word has two meanings on the list you may write both.</div>
+        <p class="small">Every attempt is recorded for your teacher, with the time you took and the words you missed. You may sit it more than once — the point is to get to <b>100%</b> and stay there.</p>
+        <div class="attempts" id="test-attempts"></div>
+        <div class="rowbtn"><button class="btn seal" onclick="startTest()">Start the test &nbsp;›</button><button class="btn ghost" onclick="goHome()">Not yet — back to menu</button></div>
+      </div>
+    </div>
+    <div id="test-run" style="display:none">
+      <div class="testhead"><span id="testheadlabel">Vocabulary test</span><span id="test-q"></span><span class="tm" id="test-timer">10:00</span></div>
+      <div class="panel">
+        <div class="bigword" id="test-word"></div>
+        <div class="center"><input type="text" id="test-inp" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="type the English meaning"></div>
+        <div class="rowbtn" style="justify-content:center"><button class="btn seal" id="test-next" onclick="testNext()">Next &nbsp;›</button></div>
+        <p class="small center" style="margin-top:14px">Press Enter or Next. Blank answers are marked wrong.</p>
+      </div>
+    </div>
+    <div id="test-result" style="display:none"></div>
+  </section>
+
+</div>
+<script>
+/* ====================================================================
+   SET DATA — injected by build_vocab_set.py from the set's JSON file.
+   Do not hand-edit the block below; edit the JSON and rebuild.
+   ==================================================================== */
+const SET_DATA={"meta": {"series": "Latin to GCSE · Chapter 7", "setLabel": "Set 1", "title": "Chapter 7 · The First Half", "subtitle": "Book 2 begins. The first twenty-two words of Chapter 7, <b>a/ab<\/b> to <b>laudo<\/b>: the agent <i>a/ab<\/i> you need for every passive sentence, the camp, the river and the consul of the stories to come, and <i>hic<\/i> and <i>ille<\/i>. Learn them cold, then prove it in test mode.", "listTitle": "Set 1: the twenty-two words", "footer": "Latin to GCSE · Chapter 7 vocabulary (a/ab → laudo, words 1–22 of 51) · the start of Book 2 · no macrons, as in the Eduqas papers", "copyInstruction": "Write the twenty-two words with their meanings on a fresh page headed <b>Chapter 7 · Set 1<\/b>. Write the genitive beside every noun (<i>corpus, corporis<\/i>) and the principal parts beside every verb (<i>gero, gerere, gessi, gestus<\/i>); mark <i>a/ab<\/i> as <b>+ abl<\/b>; and add one derivative next to each word in a different colour.", "book": "y11ch7voc27-s1", "lessonId": "Y11-CH7-VOC1", "lessonTitle": "Ch 7 · Vocabulary Set 1 (a/ab → laudo)", "lsPrefix": "y11ch7voc1_", "gateSeries": "LATIN TO GCSE · CHAPTER 7 · VOCABULARY", "gateTitle": "Set 1 · The First Half", "classHint": "11DLa", "classCode": "11DLA", "classAliases": ["11DLA", "11DLa", "YEAR11", "YEAR 11", "Y11"], "testMinutes": 10, "trackerName": "Set 1 · words 1–22 (a/ab → laudo)"}, "cats": {"people": "People", "things": "Things & ideas", "verb": "Verbs (I …)", "adj": "Adjectives (describing words)", "pron": "This, that & pronouns", "small": "Little words"}, "words": [{"id": "ab", "la": "a / ab", "extra": "+ abl", "en": "by (agent, with a passive verb); from", "acc": ["by", "from", "away from", "agent", "with a passive verb", "with passive verb", "agent with a passive verb", "agent with passive verb", "by from"], "pos": "preposition (+ ablative)", "cat": "small", "hook": "You met <i>a/ab<\/i> in Book 1 as <b>from, away from<\/b>: to <b>ab<\/b>duct someone is to lead them <b>away<\/b> (<i>ab + duco<\/i>). Its second job is the one Eduqas tests again and again: with a passive verb it names the <b>agent<\/b>, the person who did it — <i>a domino laudatus est<\/i>, 'he was praised <b>by<\/b> the master'. A thing used as a tool takes no <i>a/ab<\/i> at all (<i>gladio<\/i>, 'with a sword'). Use <i>a<\/i> before a consonant, <i>ab<\/i> before a vowel or h.", "der": ["abduct", "absent"], "spell": "ab", "frag": ["agent", "with a passive verb", "with passive verb"]}, {"id": "animus", "la": "animus", "extra": "animi", "en": "mind, spirit, soul", "acc": ["mind", "spirit", "soul", "courage", "heart"], "pos": "noun, m. (2nd decl.)", "cat": "things", "hook": "<b>Unanimous<\/b> means 'of one (<i>unus<\/i>) <b>mind<\/b>'; a <b>magnanimous<\/b> person is 'great-<b>souled<\/b>'. Do not confuse it with <i>anima<\/i>, 'breath, life', which gives us <i>animal<\/i>. <i>animus<\/i> is the mind and courage: <i>magnum animum habebat<\/i>, 'he had great spirit'.", "der": ["unanimous", "magnanimous", "animosity"]}, {"id": "audax", "la": "audax", "extra": "audacis", "en": "bold, daring", "acc": ["bold", "daring", "reckless", "audacious", "brave"], "pos": "adjective (3rd decl., one termination)", "cat": "adj", "hook": "An <b>audacious<\/b> plan is a <b>bold, daring<\/b> one; <b>audacity<\/b> is nerve. <i>audax<\/i> comes from <i>audeo<\/i>, 'I dare'. Like <i>ingens<\/i>, it has one form for all three genders in the nominative singular, and the stem shows in the genitive: <i>audax, audacis<\/i>.", "der": ["audacious", "audacity"]}, {"id": "captivus", "la": "captivus", "extra": "captivi", "en": "captive, prisoner", "acc": ["captive", "prisoner", "prisoner of war", "captives", "prisoners"], "pos": "noun, m. (2nd decl.)", "cat": "people", "hook": "A <b>captive<\/b> is someone who has been <i>captus<\/i>, taken — from <i>capio<\/i>, 'I take, I capture'. To <b>captivate<\/b> an audience originally meant to take them prisoner.", "der": ["captive", "captivate"]}, {"id": "castra", "la": "castra", "extra": "castrorum (n. pl.)", "en": "camp", "acc": ["camp", "military camp", "army camp"], "pos": "noun, n. pl. (2nd decl.)", "cat": "things", "hook": "<i>castra<\/i> is plural in form but means one <b>camp<\/b>: <i>castra erant prope flumen<\/i>, 'the camp <b>was<\/b> near the river' — plural verb, singular English. English towns ending <b>-chester, -caster<\/b> and <b>-cester<\/b> (Chester, Lancaster, Leicester) grew on Roman forts: Old English <i>ceaster<\/i> comes from <i>castra<\/i>.", "der": ["Chester", "Lancaster", "Leicester"]}, {"id": "celo", "la": "celo", "extra": "-are, -avi, -atus", "en": "I hide (something)", "acc": ["hide", "conceal", "hide something", "conceal something", "keep secret", "something"], "pos": "verb (1st conj.)", "cat": "verb", "hook": "To <b>conceal<\/b> is to <b>hide<\/b> something — from <i>concelo<\/i> (<i>con + celo<\/i>). The booklet's '(something)' matters: <i>celo<\/i> needs an object. 'He hid <i>himself<\/i>' is <i>servus <b>se<\/b> celavit<\/i>; 'the money was hidden' is the passive, <i>pecunia celata est<\/i>.", "der": ["conceal"], "frag": ["something"]}, {"id": "clarus", "la": "clarus", "extra": "-a, -um", "en": "famous, clear", "acc": ["famous", "clear", "bright", "well known", "renowned", "celebrated", "illustrious"], "pos": "adjective (2nd/1st decl.)", "cat": "adj", "hook": "Something <b>clear<\/b> has <b>clarity<\/b>; to <b>declare<\/b> is to make it clear (<i>de + clarus<\/i>). With people it means <b>famous<\/b> — someone everybody can see clearly: <i>Cicero clarus erat<\/i>. With a voice or a light it means <b>clear, bright<\/b>.", "der": ["clarity", "clarify", "declare"]}, {"id": "comes", "la": "comes", "extra": "comitis (m./f.)", "en": "companion, comrade", "acc": ["companion", "comrade", "companions", "comrades"], "pos": "noun, m./f. (3rd decl.)", "cat": "people", "hook": "The stem is <b>comit-<\/b>: <i>comes, comitem, comitis<\/i>. A medieval <b>count<\/b> was originally the king's <b>companion<\/b> — Old French <i>conte<\/i> comes from <i>comitem<\/i> — and the land he ruled was his <b>county<\/b>. Something <b>concomitant<\/b> goes along with something else, as a companion does.", "der": ["count", "county", "concomitant"]}, {"id": "consul", "la": "consul", "extra": "consulis", "en": "consul", "acc": ["consul", "consuls"], "pos": "noun, m. (3rd decl.)", "cat": "people", "hook": "Rome elected two <b>consuls<\/b> each year to run the state and lead its armies, and the year was named after them. Cicero was consul in 63 BC. Today a <b>consul<\/b> represents a country abroad and works from a <b>consulate<\/b>.", "der": ["consulate", "consular"]}, {"id": "corpus", "la": "corpus", "extra": "corporis (n.)", "en": "body", "acc": ["body", "corpse", "bodies"], "pos": "noun, n. (3rd decl.)", "cat": "things", "hook": "A <b>corpse<\/b> is a dead <b>body<\/b>; <b>corporal<\/b> punishment is punishment of the body; to <b>incorporate<\/b> something is to take it into the body. It is neuter, so <i>corpus<\/i> is both nominative and accusative, and the stem changes to <b>corpor-<\/b>: <i>corporis, corpori, corpore<\/i>.", "der": ["corpse", "corporal", "incorporate"]}, {"id": "crudelis", "la": "crudelis", "extra": "-e", "en": "cruel", "acc": ["cruel"], "pos": "adjective (3rd decl., two terminations)", "cat": "adj", "hook": "<b>Cruel<\/b> came into English through Old French from <i>crudelis<\/i>; <b>crudelity<\/b> survives only as <b>cruelty<\/b>. It declines like <i>fortis<\/i>: <i>crudelis<\/i> (m./f.), <i>crudele<\/i> (n.), ablative <i>crudeli<\/i>; the comparative is <i>crudelior<\/i>, crueller.", "der": ["cruel", "cruelty"]}, {"id": "custos", "la": "custos", "extra": "custodis (m./f.)", "en": "guard", "acc": ["guard", "guardian", "keeper", "guards"], "pos": "noun, m./f. (3rd decl.)", "cat": "people", "hook": "A prisoner in <b>custody<\/b> is under <b>guard<\/b>; a <b>custodian<\/b> looks after a building. The stem is <b>custod-<\/b>: <i>custos, custodem, custodis<\/i>.", "der": ["custody", "custodian"]}, {"id": "et", "la": "et … et", "extra": "", "en": "both … and", "acc": ["both and", "both"], "pos": "conjunction (pair)", "cat": "small", "hook": "One <i>et<\/i> means 'and'. Two of them in a row mean <b>both … and<\/b>: <i>et pueri et puellae<\/i>, '<b>both<\/b> the boys <b>and<\/b> the girls'. Do not write 'and the boys and the girls'. You already use <i>et<\/i> in <b>etc.<\/b> = <i>et cetera<\/i>, 'and the rest'.", "der": ["etc. (et cetera)"], "spell": "et et"}, {"id": "flumen", "la": "flumen", "extra": "fluminis (n.)", "en": "river", "acc": ["river", "stream", "rivers"], "pos": "noun, n. (3rd decl.)", "cat": "things", "hook": "A <b>flume<\/b> is a channel for water — the log flume at a theme park is a fake <b>river<\/b>. <i>flumen<\/i> comes from <i>fluo<\/i>, 'I flow'. It is neuter, like <i>nomen<\/i>: <i>flumen, fluminis<\/i>, and nominative = accusative.", "der": ["flume"]}, {"id": "gero", "la": "gero", "extra": "-ere, gessi, gestus", "en": "I wage (war)", "acc": ["wage", "wage war", "wage a war", "carry on", "manage", "wear", "do", "carry", "war", "waged"], "pos": "verb (3rd conj.)", "cat": "verb", "hook": "<i>bellum gerere<\/i> is 'to <b>wage war<\/b>'. A <b>belligerent<\/b> nation is one 'waging war' (<i>bellum + gero<\/i>). A <b>gesture<\/b> is something you 'carry out' with your hands, from the perfect participle <i>gestus<\/i>. Learn the perfect: <i>gessi<\/i>, not <i>gerui<\/i>.", "der": ["belligerent", "gesture"], "frag": ["war"]}, {"id": "hic", "la": "hic", "extra": "haec, hoc", "en": "this, these", "acc": ["this", "these", "this one", "this man", "this woman", "this thing", "he", "she", "it", "they"], "pos": "demonstrative pronoun / adjective", "cat": "pron", "hook": "<i>hic, haec, hoc<\/i> = <b>this<\/b> (masculine, feminine, neuter); in the plural, <b>these<\/b>. On its own it also means <b>he, she, it<\/b>: <i>hic dixit<\/i>, 'this man said / he said'. An <b>ad hoc<\/b> arrangement is made 'for <b>this<\/b>' one purpose only — <i>hoc<\/i> is the neuter.", "der": ["ad hoc"]}, {"id": "iam", "la": "iam", "extra": "", "en": "now, already", "acc": ["now", "already", "by now"], "pos": "adverb", "cat": "small", "hook": "No English derivative, so learn it by its sound: you are <b>already<\/b> in a <i>jam<\/i> <b>now<\/b> (Latin <i>i<\/i> before a vowel is said like English <i>y<\/i>: 'yam'). With a past tense it usually means <b>already<\/b>: <i>iam nox erat<\/i>, 'it was already night'.", "der": ["(none in everyday English)"]}, {"id": "ibi", "la": "ibi", "extra": "", "en": "there", "acc": ["there"], "pos": "adverb", "cat": "small", "hook": "An <b>alibi<\/b> is Latin for 'elsewhere' (<i>alius + ibi<\/i>): you were not <b>there<\/b>, you were somewhere else. In footnotes <b>ibid.<\/b> (<i>ibidem<\/i>) means 'in the same place'.", "der": ["alibi", "ibid."]}, {"id": "ille", "la": "ille", "extra": "illa, illud", "en": "that, those", "acc": ["that", "those", "that one", "that man", "that woman", "that thing", "he", "she", "it", "they"], "pos": "demonstrative pronoun / adjective", "cat": "pron", "hook": "<i>ille, illa, illud<\/i> = <b>that<\/b> (m., f., n.); plural <b>those<\/b>. On its own it often means <b>he, she, it<\/b> — especially a new subject: <i>ille respondit<\/i>, 'he (that man) replied'. No English derivative, but it became the word for 'the' and 'he' in French (<i>le, il<\/i>), Spanish (<i>el<\/i>) and Italian (<i>il<\/i>).", "der": ["(none in English; French le, il)"]}, {"id": "imperator", "la": "imperator", "extra": "imperatoris", "en": "general, leader; emperor", "acc": ["general", "leader", "emperor", "commander", "generals"], "pos": "noun, m. (3rd decl.)", "cat": "people", "hook": "An <i>imperator<\/i> is the man who gives the orders (<i>impero<\/i>, 'I order') — so an <b>imperative<\/b> is an order. Under the Republic it was a victorious <b>general<\/b>; Augustus made it his title, and it became our <b>emperor<\/b>.", "der": ["emperor", "imperative"]}, {"id": "incendo", "la": "incendo", "extra": "-ere, -i, incensus", "en": "I set on fire, I burn (something)", "acc": ["set on fire", "burn", "set fire to", "set alight", "burn something", "set something on fire", "something"], "pos": "verb (3rd conj.)", "cat": "verb", "hook": "An <b>incendiary<\/b> bomb is designed to <b>set<\/b> things <b>on fire<\/b>; <b>incense<\/b> is something you burn (from <i>incensus<\/i>). To be 'incensed' is to be burning with anger. Perfect: <i>incendi<\/i> — <i>hostes villam incenderunt<\/i>, 'the enemy set the house on fire'.", "der": ["incendiary", "incense"], "frag": ["something"]}, {"id": "laudo", "la": "laudo", "extra": "-are, -avi, -atus", "en": "I praise", "acc": ["praise"], "pos": "verb (1st conj.)", "cat": "verb", "hook": "To <b>laud<\/b> someone is to <b>praise<\/b> them; a <b>laudable<\/b> effort deserves praise. A regular 1st-conjugation verb like <i>porto<\/i>: <i>laudavit<\/i>, he praised.", "der": ["laud", "laudable"]}], "derivs": [{"der": "abduct", "a": "ab", "why": "To abduct someone is to lead them <b>away<\/b> — <b>ab<\/b> (from, away from) + <i>duco<\/i> (I lead)."}, {"der": "unanimous", "a": "animus", "why": "A unanimous vote is 'of one <b>mind<\/b>' — <i>unus<\/i> + <b>animus<\/b>."}, {"der": "magnanimous", "a": "animus", "why": "A magnanimous person is 'great-<b>souled<\/b>' — <i>magnus<\/i> + <b>animus<\/b>: generous, above petty grudges."}, {"der": "audacious", "a": "audax", "why": "An audacious plan is <b>bold<\/b> and <b>daring<\/b> — from <b>audax, audacis<\/b>."}, {"der": "captivate", "a": "captivus", "why": "To captivate an audience was first to take them <b>captive<\/b> — from <b>captivus<\/b>, itself from <i>capio<\/i>, I capture."}, {"der": "Lancaster", "a": "castra", "why": "Lancaster is 'the fort on the river Lune'. Old English <i>ceaster<\/i>, from <b>castra<\/b> (camp), marks a Roman military site."}, {"der": "conceal", "a": "celo", "why": "To conceal is to <b>hide<\/b> something — from <i>concelo<\/i>, <i>con<\/i> + <b>celo<\/b>."}, {"der": "clarify", "a": "clarus", "why": "To clarify is to make something <b>clear<\/b> — <b>clarus<\/b> + <i>facio<\/i> (I make)."}, {"der": "count (the nobleman)", "a": "comes", "why": "A count was the king's <b>companion<\/b>: Old French <i>conte<\/i> from <i>comitem<\/i>, the accusative of <b>comes<\/b>."}, {"der": "consulate", "a": "consul", "why": "A consulate is the office of a <b>consul<\/b> — today a country's representative abroad; in Rome one of the two chief magistrates."}, {"der": "corpse", "a": "corpus", "why": "A corpse is a dead <b>body<\/b> — from <b>corpus<\/b>, <i>corporis<\/i>."}, {"der": "corporal (punishment)", "a": "corpus", "why": "Corporal punishment is punishment of the <b>body<\/b> — from the stem <i>corpor-<\/i> of <b>corpus<\/b>."}, {"der": "cruelty", "a": "crudelis", "why": "Cruelty is being <b>cruel<\/b> — through Old French from <b>crudelis<\/b>."}, {"der": "custody", "a": "custos", "why": "Someone in custody is under <b>guard<\/b> — <i>custodia<\/i>, from <b>custos<\/b>, <i>custodis<\/i>."}, {"der": "etc.", "a": "et", "why": "etc. is <i>et cetera<\/i>, '<b>and<\/b> the rest' — the same <b>et<\/b> that, doubled, means 'both … and'."}, {"der": "flume", "a": "flumen", "why": "A flume is an artificial channel of water, like a small <b>river<\/b> — from <b>flumen<\/b>."}, {"der": "belligerent", "a": "gero", "why": "A belligerent country is <b>waging war<\/b> — <i>bellum<\/i> + <b>gero<\/b>. The phrase <i>bellum gerere<\/i> is in the textbook sentences all the time."}, {"der": "ad hoc", "a": "hic", "why": "An ad hoc committee is set up 'for <b>this<\/b>' one job — <i>hoc<\/i> is the neuter of <b>hic, haec, hoc<\/b>."}, {"der": "alibi", "a": "ibi", "why": "An alibi proves you were not <b>there<\/b> but 'elsewhere' — Latin <i>alibi<\/i>, from <i>alius<\/i> + <b>ibi<\/b>."}, {"der": "emperor", "a": "imperator", "why": "Emperor comes through Old French from <i>imperatorem<\/i>, accusative of <b>imperator<\/b> — originally a victorious general."}, {"der": "imperative", "a": "imperator", "why": "An imperative gives an order — from <i>impero<\/i>, I order, the verb behind <b>imperator<\/b>, 'the one who gives orders'."}, {"der": "incendiary", "a": "incendo", "why": "An incendiary device is made to <b>set things on fire<\/b> — from <b>incendo<\/b>."}, {"der": "laudable", "a": "laudo", "why": "A laudable effort deserves <b>praise<\/b> — from <b>laudo<\/b>, I praise."}], "context": [{"w": "castra", "sent": "milites in <b>castris<\/b> manebant.", "gloss": "milites = the soldiers · in = in · manebant = were staying", "q": "castris", "opts": ["camp", "river", "battle", "city"], "a": 0, "why": "<b>castris<\/b> is the ablative plural of <b>castra, castrorum<\/b> (ending <span class='end'>-is<\/span>) after <i>in<\/i> = 'in'. The word is always plural, but English says 'in the <b>camp<\/b>'."}, {"w": "flumen", "sent": "dominus <b>flumen<\/b> transire non poterat.", "gloss": "dominus = the master · transire = to cross · non poterat = was not able", "q": "flumen", "opts": ["river", "bridge", "road", "wall"], "a": 0, "why": "<b>flumen<\/b> is neuter 3rd declension, so the accusative is the same as the nominative. Here it is the object of <i>transire<\/i>: 'to cross the <b>river<\/b>'."}, {"w": "laudo", "sent": "rex milites <b>laudavit<\/b>.", "gloss": "rex = the king · milites = the soldiers", "q": "laudavit", "opts": ["praised", "warned", "called", "saw"], "a": 0, "why": "<b>laudavit<\/b> is the perfect of <b>laudo<\/b>, 3rd person singular (ending <span class='end'>-avit<\/span>): 'the king <b>praised<\/b> the soldiers'."}, {"w": "incendo", "sent": "hostes villam <b>incenderunt<\/b>.", "gloss": "hostes = the enemy · villam = the house", "q": "incenderunt", "opts": ["set on fire", "attacked", "entered", "saw"], "a": 0, "why": "<b>incenderunt<\/b> is the perfect of <b>incendo<\/b>, 3rd person plural (stem <i>incend-<\/i> + <span class='end'>-erunt<\/span>): 'the enemy <b>set<\/b> the house <b>on fire<\/b>'."}, {"w": "corpus", "sent": "senex <b>corpus<\/b> in via invenit.", "gloss": "senex = the old man · in via = in the road · invenit = found", "q": "corpus", "opts": ["body", "sword", "gift", "letter"], "a": 0, "why": "<b>corpus<\/b> is neuter 3rd declension: nominative and accusative are the same. Here it is the object of <i>invenit<\/i> — the old man is the subject."}, {"w": "crudelis", "sent": "rex <b>crudelis<\/b> cives terrebat.", "gloss": "rex = the king · cives = the citizens · terrebat = was frightening", "q": "crudelis", "opts": ["cruel", "famous", "bold", "wise"], "a": 0, "why": "<b>crudelis<\/b> is the masculine nominative singular, agreeing with <i>rex<\/i>: 'the <b>cruel<\/b> king'. The neuter would be <i>crudele<\/i>."}, {"w": "clarus", "sent": "Cicero <b>clarus<\/b> erat.", "gloss": "Cicero = Cicero (consul in 63 BC) · erat = was", "q": "clarus", "opts": ["famous", "cruel", "bold", "few"], "a": 0, "why": "<b>clarus<\/b> agrees with <i>Cicero<\/i> (masculine nominative singular, <span class='end'>-us<\/span>). Used of a person it means <b>famous<\/b>; of a voice or light, clear."}, {"w": "et", "sent": "<b>et<\/b> pueri <b>et<\/b> puellae laeti erant.", "gloss": "pueri = the boys · puellae = the girls · laeti erant = were happy", "q": "et … et", "opts": ["both … and", "either … or", "neither … nor", "and … also"], "a": 0, "why": "Two <b>et<\/b>s in a pair mean <b>both … and<\/b>: '<b>both<\/b> the boys <b>and<\/b> the girls were happy'."}, {"w": "comes", "sent": "servus <b>comitem<\/b> in silva celavit.", "gloss": "servus = the slave · in silva = in the wood · celavit = hid", "q": "comitem", "opts": ["companion", "master", "brother", "horse"], "a": 0, "why": "<b>comitem<\/b> is the accusative singular of <b>comes, comitis<\/b> (stem <i>comit-<\/i> + <span class='end'>-em<\/span>) — the object of <i>celavit<\/i>: 'the slave hid the <b>companion<\/b>'."}, {"w": "animus", "sent": "miles magnum <b>animum<\/b> habebat.", "gloss": "miles = the soldier · magnum = great · habebat = had", "q": "animum", "opts": ["spirit", "body", "sword", "voice"], "a": 0, "why": "<b>animum<\/b> is the accusative singular of <b>animus<\/b> (2nd decl., <span class='end'>-um<\/span>), object of <i>habebat<\/i>. 'He had great <b>spirit<\/b>' = he was brave."}, {"w": "ibi", "sent": "puer ad flumen cucurrit et <b>ibi<\/b> mansit.", "gloss": "puer = the boy · ad flumen = to the river · cucurrit = ran · et = and · mansit = stayed", "q": "ibi", "opts": ["there", "already", "never", "often"], "a": 0, "why": "<b>ibi<\/b> is an adverb and never changes its ending: 'he ran to the river and stayed <b>there<\/b>'."}, {"w": "iam", "sent": "<b>iam<\/b> nox erat.", "gloss": "nox = night · erat = it was", "q": "iam", "opts": ["already", "there", "never", "often"], "a": 0, "why": "<b>iam<\/b> is an adverb; with a past tense it means <b>already<\/b> (by now): 'it was <b>already<\/b> night'."}]};
+const META=SET_DATA.meta, WORDS=SET_DATA.words, DERIVS=SET_DATA.derivs||[], CONTEXT=SET_DATA.context||[], CATS=SET_DATA.cats||null;
+const TEST_SECS=(META.testMinutes||10)*60;
+const BYID={}; WORDS.forEach(w=>BYID[w.id]=w);
+
+
+
+/* Activity registry: id → hub card + how it is scored */
+const ACTS=[
+ {id:"list",   phase:"learn",    ic:"📜", t:"The list",            d:"Read the words with their derivatives and memory hooks.", scored:false},
+ {id:"flash",  phase:"learn",    ic:"🃏", t:"Flashcards",          d:"Flip each card, then say whether you knew it. Re-run the ones you didn't.", scored:false},
+ {id:"mc",     phase:"practise", ic:"🎯", t:"Multiple choice",     d:"Latin → English. One question per word, four options each.", scored:true},
+ {id:"match",  phase:"practise", ic:"🔗", t:"Match-up",            d:"Pair Latin with English in four quick rounds.", scored:true},
+ {id:"type",   phase:"practise", ic:"⌨️", t:"Type the meaning",   d:"No options to lean on — type the English yourself.", scored:true},
+ {id:"anagram",phase:"practise", ic:"🔀", t:"Anagram: spell it",   d:"Unscramble and type the Latin word from its meaning.", scored:true},
+ {id:"deriv",  phase:"practise", ic:"🔍", t:"Derivative detective",d:"Which Latin word gave us the English word? Work it out from the letters.", scored:true},
+ {id:"sort",   phase:"practise", ic:"🗂️", t:"Sort the words",     d:"Sort every word into its group — you need the meanings to do it.", scored:true},
+ {id:"context",phase:"practise", ic:"📖", t:"Words in sentences",  d:"Spot the word inside a real Latin sentence — endings included.", scored:true},
+ {id:"sprint", phase:"practise", ic:"⏱️", t:"Beat the clock",     d:"Sixty seconds, as many as you can. Accuracy counts.", scored:true},
+ {id:"test",   phase:"test",     ic:"📝", t:"Test mode",           d:"Every word, typed, timed, test conditions. Recorded for your teacher.", scored:true}
+];
+/* activities with no data for this set are removed everywhere (hub, counts, tracker "of N") */
+for(let i=ACTS.length-1;i>=0;i--){ const a=ACTS[i]; if((a.id==='deriv'&&!DERIVS.length)||(a.id==='context'&&!CONTEXT.length)||(a.id==='sort'&&!CATS)) ACTS.splice(i,1); }
+const SCORED_IDS=ACTS.filter(a=>a.scored&&a.id!=="test").map(a=>a.id);
+
+/* ====================================================================
+   STATE — persisted locally and mirrored to the cloud.
+   ==================================================================== */
+function blankState(){
+  const s={ acts:{}, words:{}, test:{attempts:[],best:null,latest:null}, questions:0, cards:0, lastActive:null, testInProgress:null };
+  ACTS.forEach(a=>{ s.acts[a.id]={attempts:0,best:null,latest:null,done:false,answered:0,correct:0}; });
+  WORDS.forEach(w=>{ s.words[w.id]={r:0,w:0,tr:0,tw:0}; });   // practice right/wrong, test right/wrong
+  return s;
+}
+let S=blankState();
+function storeKey(){ return META.lsPrefix+userKey(); }
+function saveLocal(){ try{ localStorage.setItem(storeKey(),JSON.stringify(S)); }catch(e){} }
+function loadLocal(){ try{ const j=JSON.parse(localStorage.getItem(storeKey())||"null"); if(j) mergeState(j); }catch(e){} }
+function flushCloud(){ if(!IDENTITY||!_dirty) return; clearTimeout(_mt); _dirty=false;
+  try{ fetch(CLOUD.endpoint,{method:"POST",keepalive:true,headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({key:fullKey(),cls:IDENTITY.cls,cand:IDENTITY.cand,book:CLOUD.book,data:progressSummary(),savedAt:new Date().toISOString()})}); }catch(e){} }
+window.addEventListener('pagehide',flushCloud); document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') flushCloud(); });
+/* Merge another copy of this pupil's state INTO S (local copy vs cloud copy, two tabs, two devices):
+   counters take the larger value, ticks are OR-ed, test attempts are unioned by timestamp. */
+function mergeState(j){
+  if(!j||!j.acts) return;
+  const mx=(a,b)=>Math.max(a||0,b||0), mxn=(a,b)=> (a==null?b:(b==null?a:Math.max(a,b)));
+  const newer= (j.lastActive||"")>(S.lastActive||"");
+  Object.keys(S.acts).forEach(k=>{ const a=S.acts[k], b=j.acts[k]; if(!b) return;
+    a.attempts=mx(a.attempts,b.attempts); a.best=mxn(a.best,b.best); a.done=!!(a.done||b.done);
+    a.answered=mx(a.answered,b.answered); a.correct=mx(a.correct,b.correct); a.bestRun=mx(a.bestRun,b.bestRun)||undefined;
+    if(newer && b.latest!=null) a.latest=b.latest; else if(a.latest==null) a.latest=b.latest==null?null:b.latest; });
+  Object.keys(S.words).forEach(k=>{ const a=S.words[k], b=(j.words||{})[k]; if(!b) return; ['r','w','tr','tw'].forEach(f=>a[f]=mx(a[f],b[f])); });
+  if(j.test&&Array.isArray(j.test.attempts)){ const seen={}; S.test.attempts.forEach(t=>seen[t.at]=true);
+    j.test.attempts.forEach(t=>{ if(t&&t.at&&!seen[t.at]){ S.test.attempts.push(t); seen[t.at]=true; } });
+    S.test.attempts.sort((x,y)=>(x.at||"").localeCompare(y.at||"")); if(S.test.attempts.length>12) S.test.attempts=S.test.attempts.slice(-12);
+    S.test.best= S.test.attempts.length? Math.max.apply(null,S.test.attempts.map(t=>t.pct)) : null;
+    S.test.latest= S.test.attempts.length? S.test.attempts[S.test.attempts.length-1].pct : null; }
+  S.questions=mx(S.questions,j.questions); S.cards=mx(S.cards,j.cards);
+  if((j.lastActive||"")>(S.lastActive||"")) S.lastActive=j.lastActive;
+  if(j.testInProgress && !S.testInProgress) S.testInProgress=j.testInProgress;
+}
+/* record a finished scored round */
+function recordRound(actId, correct, total, extra){
+  const a=S.acts[actId]; const pct= total? Math.round(100*correct/total):0;
+  a.attempts++; a.latest=pct; a.best= (a.best===null)? pct : Math.max(a.best,pct);
+  a.done=true; a.answered+=total; a.correct+=correct;
+  if(extra) Object.assign(a,extra);
+  S.questions+=total; S.lastActive=new Date().toISOString();
+  saveLocal(); mirrorToCloud(); renderHub();
+}
+function recordWord(id, ok, isTest){
+  const w=S.words[id]; if(!w) return;
+  if(isTest){ ok? w.tr++ : w.tw++; } else { ok? w.r++ : w.w++; }
+}
+function practicePct(){
+  const b=SCORED_IDS.map(id=>S.acts[id].best).filter(v=>v!==null);
+  return b.length? Math.round(b.reduce((x,y)=>x+y,0)/b.length) : null;
+}
+function actsDone(){ return ACTS.filter(a=>S.acts[a.id].done).length; }
+
+/* ====================================================================
+   UTILITIES
+   ==================================================================== */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function sample(arr,n,exclude){ return shuffle(arr.filter(x=>x!==exclude)).slice(0,n); }
+function norm(s){ return (s||"").toLowerCase().replace(/[’']/g,"").replace(/[^a-z0-9\s-]/g," ").replace(/-/g," ").replace(/\s+/g," ").trim(); }  /* digits kept so a numeral set can accept "3" for tres */
+function stripLead(s){ let t=s; for(let i=0;i<2;i++) t=t.replace(/^(i|to|a|an|the|my|his|her)\s+/,""); return t; }
+function lev(a,b){ const m=a.length,n=b.length; if(!m) return n; if(!n) return m; const d=[]; for(let i=0;i<=m;i++){d[i]=[i];} for(let j=1;j<=n;j++){d[0][j]=j;} for(let i=1;i<=m;i++){for(let j=1;j<=n;j++){ d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1)); }} return d[m][n]; }
+/* Is the typed English an acceptable meaning of word w? strict = test mode (no typo tolerance) */
+function checkEnglish(w, typed, strict){
+  const pieces=String(typed||"").toLowerCase().replace(/\+\s*acc\.?/g,"").split(/\s*(?:,|\/|;|\(|\)|\s-\s|\bor\b)\s*/).map(p=>stripLead(norm(p))).filter(Boolean);
+  if(!pieces.length||pieces.length>4) return false;
+  const accs=w.acc.map(a=>stripLead(norm(a)));
+  const hit=(list,p)=> list.some(a=> a===p || (!strict && a.length>=5 && lev(a,p)<=1) );
+  /* every part the pupil offers must be a correct meaning — "god, goddess" is hedging and scores nothing */
+  if(!pieces.every(p=> hit(accs,p))) return false;
+  /* a fragment ("from" in "I am distant (from)", "+ dat") is only ever an extra — never an answer on its own */
+  const frags=(w.frag||[]).map(a=>stripLead(norm(a)));
+  if(frags.length && pieces.every(p=> hit(frags,p))) return false;
+  return true;
+}
+function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); $(id).classList.add('active'); window.scrollTo({top:0,behavior:'smooth'}); $('homebtn').style.display = (id==='s-hub')?'none':'inline-block'; stopTimers(); }
+function goHome(){ if(TEST.running && !confirm('Leave the test? This attempt will be handed in as it stands.')) return; if(TEST.running) finishTest(true); show('s-hub'); renderHub(); }
+let TIMERS=[]; function stopTimers(){ TIMERS.forEach(t=>clearInterval(t)); TIMERS=[]; }
+function pctClass(p){ return p>=70?'ok':(p>=50?'':'no'); }
+function bandText(pct){ if(pct>=90) return 'Outstanding — these words are secure.'; if(pct>=70) return 'Good — a few more rounds and they will be cold.'; if(pct>=50) return 'A fair start — go back to the flashcards for the ones you missed.'; return 'Keep going — re-read the list, then try again.'; }
+function weightedWord(){ /* words wrong more often come up more */
+  const pool=[]; WORDS.forEach(w=>{ const st=S.words[w.id]; const wt=1+Math.min(4,(st.w+st.tw)); for(let i=0;i<wt;i++) pool.push(w); }); return pool[Math.floor(Math.random()*pool.length)];
+}
+
+/* ====================================================================
+   HUB
+   ==================================================================== */
+function renderHub(){
+  const done=actsDone(), pp=practicePct(), tb=S.test.best;
+  const frac=done/ACTS.length, r=46, c=2*Math.PI*r;
+  $('ring').innerHTML='<svg viewBox="0 0 110 110"><circle cx="55" cy="55" r="'+r+'" fill="none" stroke="#e6d9bb" stroke-width="10"/>'
+    +'<circle cx="55" cy="55" r="'+r+'" fill="none" stroke="#a8741f" stroke-width="10" stroke-linecap="round" stroke-dasharray="'+c+'" stroke-dashoffset="'+(c*(1-frac))+'" transform="rotate(-90 55 55)"/>'
+    +'<text x="55" y="52" text-anchor="middle" font-size="22" font-weight="700" fill="#8c2f24" font-family="Georgia,serif">'+done+'/'+ACTS.length+'</text><text x="55" y="70" text-anchor="middle" font-size="10" fill="#6b5d44" font-family="Georgia,serif" letter-spacing="1">ACTIVITIES</text></svg>';
+  $('hubstats').innerHTML='<span class="st">Questions answered <b>'+S.questions+'</b></span><span class="st">Flashcards seen <b>'+(S.cards||0)+'</b></span>'
+    +'<span class="st">Practice score <b>'+(pp===null?'—':pp+'%')+'</b></span>'
+    +'<span class="st">Best test <b>'+(tb===null?'—':tb+'%')+'</b></span>'
+    +(IDENTITY?'<div class="small" style="margin-top:6px">Signed in as <b>'+esc(IDENTITY.cand)+'</b> ('+esc(IDENTITY.cls)+'). Everything here is saved automatically.</div>':'');
+  const build=(phase)=>ACTS.filter(a=>a.phase===phase).map(a=>{
+    const st=S.acts[a.id]; let best='';
+    if(a.id==='test') best= S.test.attempts.length? ('best <b>'+S.test.best+'%</b> · '+S.test.attempts.length+' attempt'+(S.test.attempts.length>1?'s':'')) : 'not yet sat';
+    else if(a.scored) best= st.best===null? 'not tried yet' : ('best <b>'+st.best+'%</b> · '+st.attempts+' round'+(st.attempts>1?'s':''));
+    else best= st.done? 'done' : 'not yet';
+    return '<button class="acard'+(st.done?' done':'')+(a.id==='test'?' test':'')+'" onclick="openAct(\''+a.id+'\')"><span class="tick">✓</span><span class="ic">'+a.ic+'</span><span class="t">'+a.t+'</span><span class="d">'+a.d+'</span><span class="best">'+best+'</span></button>';
+  }).join('');
+  $('cards-learn').innerHTML=build('learn'); $('cards-practise').innerHTML=build('practise'); $('cards-test').innerHTML=build('test');
+}
+function openAct(id){
+  ({list:showList, flash:startFlash, mc:startMC, match:startMatch, type:startType, anagram:startAnagram, deriv:startDeriv, sort:startSort, context:startContext, sprint:showSprint, test:showTest})[id]();
+}
+
+/* ====================================================================
+   LEARN 1 — THE LIST
+   ==================================================================== */
+function showList(){
+  let h='<tr><th>#</th><th>Latin</th><th>Meaning</th><th>Derivatives &amp; hook</th></tr>';
+  WORDS.forEach((w,i)=>{ h+='<tr><td>'+(i+1)+'</td><td class="l">'+w.la+(w.extra?' <span class="pos">'+w.extra+'</span>':'')+'<span class="pos">'+w.pos+'</span></td><td>'+esc(w.en)+'</td><td><span class="der">'+esc(w.der.join(', '))+'</span><br><span class="small">'+w.hook+'</span></td></tr>'; });
+  $('voctable').innerHTML=h;
+  if(!S.acts.list.done){ S.acts.list.done=true; S.lastActive=new Date().toISOString(); saveLocal(); mirrorToCloud(); }
+  show('s-list');
+}
+
+/* ====================================================================
+   LEARN 2 — FLASHCARDS
+   ==================================================================== */
+const FL={deck:[],i:0,known:[],unknown:[],flipped:false};
+function startFlash(deck){
+  FL.deck= deck||shuffle(WORDS); FL.i=0; FL.known=[]; FL.unknown=[]; FL.flipped=false;
+  $('flash-summary').innerHTML=''; show('s-flash'); renderFlash();
+}
+function renderFlash(){
+  const n=FL.deck.length;
+  if(FL.i>=n){ return flashDone(); }
+  const w=FL.deck[FL.i]; FL.flipped=false;
+  $('flash-prog').textContent='Card '+(FL.i+1)+' of '+n; $('flash-known').textContent='Known: '+FL.known.length+' · Not yet: '+FL.unknown.length;
+  $('flash-bar').style.width=(100*FL.i/n)+'%';
+  $('flash-area').innerHTML='<div class="fc" id="fc" onclick="flipCard()"><div class="fcin">'
+    +'<div class="face"><div class="w">'+w.la+'</div>'+(w.extra?'<div class="h">'+w.extra+'</div>':'')+'<div class="hint">click to flip</div></div>'
+    +'<div class="face back"><div class="w" style="font-size:22px">'+w.la+'</div><div class="m">'+esc(w.en)+'</div><div class="h">'+w.hook+'</div></div>'
+    +'</div></div>';
+  $('flash-btns').innerHTML='<button class="btn ghost" onclick="flipCard()">Flip</button><button class="btn" id="fl-no" onclick="flashMark(false)" disabled>✗ &nbsp;Not yet</button><button class="btn gold" id="fl-yes" onclick="flashMark(true)" disabled>✓ &nbsp;Got it</button>';
+}
+function flipCard(){ const fc=$('fc'); if(!fc) return; FL.flipped=!FL.flipped; fc.classList.toggle('flip',FL.flipped); $('fl-no').disabled=false; $('fl-yes').disabled=false; }
+function flashMark(ok){ const w=FL.deck[FL.i]; (ok?FL.known:FL.unknown).push(w); FL.i++; renderFlash(); }
+function flashDone(){
+  const a=S.acts.flash; const full=(FL.deck.length===WORDS.length);
+  a.attempts++; a.answered+=FL.deck.length; a.correct+=FL.known.length; S.cards=(S.cards||0)+FL.deck.length;
+  if(full){ a.done=true; const pct=Math.round(100*FL.known.length/FL.deck.length); a.latest=pct; a.best=(a.best===null)?pct:Math.max(a.best,pct); }
+  S.lastActive=new Date().toISOString(); saveLocal(); mirrorToCloud();
+  $('flash-bar').style.width='100%'; $('flash-prog').textContent='Deck finished';
+  $('flash-area').innerHTML=''; $('flash-btns').innerHTML='';
+  let h='<div class="center"><div class="bignum">'+FL.known.length+' / '+FL.deck.length+'</div><p>cards you knew straight away.</p></div>';
+  if(FL.unknown.length){ h+='<p class="wordlist-inline">Still to learn: '+FL.unknown.map(w=>'<b>'+w.la+'</b> ('+esc(w.en)+')').join(', ')+'.</p>'; }
+  h+='<div class="rowbtn" style="justify-content:center">'+(FL.unknown.length?'<button class="btn gold" onclick="startFlash(shuffle(FL.unknown))">Re-run the '+FL.unknown.length+' I missed</button>':'')+'<button class="btn ghost" onclick="startFlash()">Whole deck again</button><button class="btn" onclick="startMC()">On to multiple choice &nbsp;›</button><button class="btn ghost" onclick="goHome()">Menu</button></div>';
+  $('flash-summary').innerHTML=h;
+}
+
+/* ====================================================================
+   GENERIC QUIZ ENGINE — MC / typed / anagram / derivative / context
+   items: [{render(), check(input)->{ok, why, wordId}, ...}]
+   ==================================================================== */
+const Q={act:null,items:[],i:0,correct:0,answered:false};
+function startQuiz(act,tag,title,blurb,items){
+  Q.act=act; Q.items=items; Q.i=0; Q.correct=0; Q.answered=false;
+  $('quiz-tag').textContent=tag; $('quiz-title').textContent=title; $('quiz-blurb').innerHTML=blurb; $('quiz-summary').innerHTML='';
+  show('s-quiz'); renderQ();
+}
+function renderQ(){
+  const n=Q.items.length;
+  $('quiz-prog').textContent='Question '+(Q.i+1)+' of '+n; $('quiz-score').textContent='Score: '+Q.correct+' / '+Q.i;
+  $('quiz-bar').style.width=(100*Q.i/n)+'%';
+  Q.answered=false; $('quiz-area').innerHTML=Q.items[Q.i].render(); const inp=$('q-inp'); if(inp) inp.focus();
+}
+function answerQ(ok, why, wordId){
+  if(Q.answered) return; Q.answered=true; if(ok) Q.correct++;
+  if(wordId) recordWord(wordId, ok, false);
+  const fb=$('q-fb'); fb.innerHTML=(ok?'<span class="ok">✓ Correct.</span>':'<span class="no">✗ Not quite.</span>')+'<span class="why">'+why+'</span>';
+  $('quiz-score').textContent='Score: '+Q.correct+' / '+(Q.i+1);
+  Q.answeredAt=Date.now();
+  const nx=$('q-next'); nx.style.display='inline-block';
+}
+/* Enter advances once a question has been answered (guarded so the Enter that submitted it does not also advance) */
+document.addEventListener('keydown',function(e){
+  if(e.key!=='Enter'||e.repeat) return; if(!$('s-quiz').classList.contains('active')) return;
+  if(Q.act && Q.answered && Date.now()-(Q.answeredAt||0)>300){ e.preventDefault(); nextQ(); }
+});
+function nextQ(){ if(!Q.act||Q.i>=Q.items.length) return; Q.i++; if(Q.i>=Q.items.length) return quizDone(); renderQ(); }
+function quizDone(){
+  const n=Q.items.length, pct=Math.round(100*Q.correct/n); const act=Q.act; Q.act=null; Q.answered=false;
+  recordRound(act, Q.correct, n);
+  $('quiz-bar').style.width='100%'; $('quiz-prog').textContent='Finished';
+  $('quiz-area').innerHTML='';
+  const wrongs=[...new Set(Q.items.filter(it=>it.wrong).map(it=>it.wordId).filter(Boolean))]; Q.wrongIds=wrongs;
+  let h='<div class="center"><div class="bignum">'+pct+'%</div><p>'+Q.correct+' out of '+n+'. '+bandText(pct)+'</p></div>';
+  if(wrongs.length) h+='<p class="wordlist-inline">Look again at: '+wrongs.map(id=>'<b>'+BYID[id].la+'</b> ('+esc(BYID[id].en)+')').join(', ')+'.</p>';
+  h+='<div class="rowbtn" style="justify-content:center"><button class="btn gold" onclick="openAct(\''+act+'\')">Another round</button>'+(wrongs.length?'<button class="btn ghost" onclick="startFlash(shuffle(Q.wrongIds.map(i=>BYID[i])))">Flashcards for the ones I missed</button>':'')+'<button class="btn ghost" onclick="goHome()">Back to menu</button></div>';
+  $('quiz-summary').innerHTML=h;
+}
+/* builders */
+function mcItem(prompt, options, correctIdx, why, wordId, sub){
+  const it={wordId, wrong:false};
+  it.render=()=>'<div class="q"><div class="prompt">'+prompt+'</div>'+(sub?'<p class="small" style="margin:-4px 0 10px">'+sub+'</p>':'')+'<div class="opts">'+options.map((o,i)=>'<button class="opt" onclick="pickMC(this,'+i+')">'+o+'</button>').join('')+'</div><div class="feedback" id="q-fb" aria-live="polite"></div><div class="rowbtn"><button class="btn" id="q-next" style="display:none" onclick="nextQ()">Next &nbsp;›</button></div></div>';
+  it.correct=correctIdx; it.why=why; return it;
+}
+function pickMC(btn,i){
+  if(Q.answered) return; const it=Q.items[Q.i]; const ok=(i===it.correct); it.wrong=!ok;
+  const opts=btn.parentNode.querySelectorAll('.opt'); opts.forEach((o,k)=>{ o.disabled=true; if(k===it.correct) o.classList.add('correct'); else if(k===i) o.classList.add('wrong'); });
+  answerQ(ok, it.why, it.wordId);
+}
+function typeItem(prompt, checkFn, modelText, why, wordId, sub, placeholder){
+  const it={wordId, wrong:false, checkFn, modelText, why};
+  it.render=()=>'<div class="q"><div class="prompt">'+prompt+'</div>'+(sub?sub:'')+'<div><input type="text" id="q-inp" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="'+(placeholder||'type the English meaning')+'" onkeydown="if(event.key===\'Enter\'&&!event.repeat){ event.stopPropagation(); if(Q.answered){ if(Date.now()-(Q.answeredAt||0)>300) nextQ(); } else submitType(); }"> <button class="btn sm gold" onclick="submitType()" id="q-sub">Check</button></div><div class="feedback" id="q-fb" aria-live="polite"></div><div class="rowbtn"><button class="btn" id="q-next" style="display:none" onclick="nextQ()">Next &nbsp;›</button></div></div>';
+  return it;
+}
+function submitType(){
+  if(Q.answered) return; const it=Q.items[Q.i]; const v=$('q-inp').value; if(!v.trim()){ $('q-fb').innerHTML='<span class="no">Type an answer first.</span>'; return; }
+  const ok=it.checkFn(v); it.wrong=!ok; $('q-inp').readOnly=true; $('q-sub').disabled=true;
+  answerQ(ok, (ok?'':'The answer is <b>'+esc(it.modelText)+'</b>. ')+it.why, it.wordId);
+}
+
+/* PRACTISE 1 — multiple choice (Latin → English) */
+function startMC(){
+  const items=shuffle(WORDS).map(w=>{ const ds=sample(WORDS,3,w).map(d=>d.en); const opts=shuffle([w.en].concat(ds)); return mcItem('What does <b>'+w.la+'</b>'+(w.extra?' <span class="small">('+w.extra+')</span>':'')+' mean?', opts.map(esc), opts.indexOf(w.en), '<b>'+w.la+'</b> = '+esc(w.en)+'. '+w.hook, w.id); });
+  startQuiz('mc','Practise · Multiple choice','Latin → English','Pick the meaning. Read the feedback even when you are right — the derivative is what will make it stick.',items);
+}
+/* PRACTISE 3 — type the meaning */
+function startType(){
+  const items=shuffle(WORDS).map(w=>typeItem('<b>'+w.la+'</b>'+(w.extra?' <span class="small">('+w.extra+')</span>':''), v=>checkEnglish(w,v,false), w.en, w.hook, w.id));
+  startQuiz('type','Practise · Type the meaning','Latin → English, typed','Type the English and press Enter. For verbs you can write "I walk" or just "walk"; any meaning on the list is accepted. One spelling slip is forgiven here — it will not be in the test.',items);
+}
+/* PRACTISE 4 — anagram: English → Latin spelling */
+function startAnagram(){
+  const items=shuffle(WORDS).map(w=>{
+    /* the spelling target is meta-clean: a headword like "quis? quid?" or "re-" could never
+       be matched against norm(typed), so use w.spell when given, else the normalised la */
+    const tgt=norm(w.spell||w.la);
+    const scr=t=>{ if(t.length<=2) return t.split('').reverse().join(''); let sc=t,tries=0; do{ sc=shuffle(t.split('')).join(''); tries++; }while(sc===t && tries<10); return sc; };
+    const tiles='<div class="tiles">'+tgt.split(' ').map(part=>scr(part).split('').map(ch=>'<span class="tile">'+ch+'</span>').join('')).join('<span class="tile" style="border:0;background:none;box-shadow:none">&nbsp;</span>')+'</div>';
+    return typeItem('Which Latin word means <b>'+esc(w.en)+'</b>'+(w.extra?' <span class="small">('+esc(w.extra)+')</span>':'')+'?', v=>norm(v)===tgt, tgt, 'Spelling matters in Latin — one letter changes the ending, and the ending changes the meaning.', w.id, tiles, 'type the Latin word');
+  });
+  startQuiz('anagram','Practise · Anagram','English → Latin: spell it','The letters are scrambled. Type the Latin word exactly — this is the direction the test will not ask, but the spelling practice makes the meaning stick.',items);
+}
+/* PRACTISE 5 — derivative detective */
+function startDeriv(){
+  const items=shuffle(DERIVS).map(d=>{ const w=BYID[d.a]; const ex=d.excl||[]; const ds=shuffle(WORDS.filter(x=>x!==w&&!ex.includes(x.id))).slice(0,3).map(x=>x.la); const opts=shuffle([w.la].concat(ds)); return mcItem('Which Latin word gives us the English word <b>'+esc(d.der)+'</b>?', opts.map(o=>'<span class="lat">'+o+'</span>'), opts.indexOf(w.la), d.why, w.id); });
+  startQuiz('deriv','Practise · Derivative detective','Where did the English word come from?','Every one of these English words grew from one of the words in this set. Work it out from the letters — and remember the link.',items);
+}
+/* PRACTISE 7 — words in context */
+function startContext(){
+  const items=shuffle(CONTEXT).map(c=>{ const order=shuffle([0,1,2,3]); const opts=order.map(i=>c.opts[i]); const correct=order.indexOf(c.a); return mcItem(c.sent, opts.map(esc), correct, c.why, c.w, 'What does <b>'+esc(c.q)+'</b> mean here? &nbsp;<span class="ital">'+esc(c.gloss)+'</span>'); });
+  startQuiz('context','Practise · Words in sentences','Spot the word in a real sentence','The word will not always look exactly like the list — the <span class="end">ending</span> changes with its job in the sentence. Use the Beaz Method: find the verb, then who is doing it, then what is done to.',items);
+}
+
+/* ====================================================================
+   PRACTISE 2 — MATCH-UP (4 rounds × 5 pairs)
+   ==================================================================== */
+const M={rounds:[],r:0,sel:null,wrongIds:new Set(),pairsLeft:0,correct:0,total:0};
+function startMatch(){
+  const ws=shuffle(WORDS); M.rounds=[]; for(let i=0;i<ws.length;i+=5) M.rounds.push(ws.slice(i,i+5)); M.r=0; M.correct=0; M.total=0; M.wrongIds=new Set(); $('match-summary').innerHTML=''; show('s-match'); renderMatch();
+}
+function renderMatch(){
+  const ws=M.rounds[M.r]; M.sel=null; M.pairsLeft=ws.length; M.roundWrong=new Set();
+  $('match-prog').textContent='Round '+(M.r+1)+' of '+M.rounds.length; $('match-score').textContent='Correct first time: '+M.correct+' / '+M.total; $('match-bar').style.width=(100*M.r/M.rounds.length)+'%';
+  const lats=shuffle(ws), ens=shuffle(ws);
+  $('match-area').innerHTML='<div class="mgrid"><div class="mcol">'+lats.map(w=>'<button class="mt lat" data-id="'+w.id+'" onclick="matchPick(this,\'L\')">'+w.la+(w.extra?' <span class="small">'+w.extra+'</span>':'')+'</button>').join('')+'</div><div class="mcol">'+ens.map(w=>'<button class="mt" data-id="'+w.id+'" onclick="matchPick(this,\'E\')">'+esc(w.en)+'</button>').join('')+'</div></div><div class="feedback" id="match-fb" aria-live="polite"></div>';
+}
+function matchPick(btn,side){
+  if(!M.sel){ M.sel={btn,side}; btn.classList.add('sel'); return; }
+  if(M.sel.btn===btn){ btn.classList.remove('sel'); M.sel=null; return; }
+  if(M.sel.side===side){ M.sel.btn.classList.remove('sel'); M.sel={btn,side}; btn.classList.add('sel'); return; }
+  const a=M.sel.btn, b=btn; a.classList.remove('sel'); M.sel=null;
+  const idA=a.dataset.id, idB=b.dataset.id;
+  if(idA===idB){ a.classList.add('paired'); b.classList.add('paired'); a.disabled=true; b.disabled=true; M.pairsLeft--; M.total++;
+    const firstTime=!M.roundWrong.has(idA); if(firstTime) M.correct++; recordWord(idA, firstTime, false);
+    $('match-fb').innerHTML='<span class="ok">✓ '+BYID[idA].la+' = '+esc(BYID[idA].en)+'</span>';
+    $('match-score').textContent='Correct first time: '+M.correct+' / '+M.total;
+    if(M.pairsLeft===0){ setTimeout(()=>{ M.r++; if(M.r>=M.rounds.length) matchDone(); else renderMatch(); },700); }
+  } else { a.classList.add('shake'); b.classList.add('shake'); setTimeout(()=>{a.classList.remove('shake');b.classList.remove('shake');},400);
+    const latinId=(a.classList.contains('lat')?idA:idB); M.roundWrong.add(latinId); M.wrongIds.add(latinId);
+    $('match-fb').innerHTML='<span class="no">✗ Those two do not go together. Try again.</span>'; }
+}
+function matchDone(){
+  const pct=Math.round(100*M.correct/M.total); recordRound('match',M.correct,M.total);
+  $('match-bar').style.width='100%'; $('match-prog').textContent='Finished'; $('match-area').innerHTML='';
+  let h='<div class="center"><div class="bignum">'+pct+'%</div><p>'+M.correct+' of '+M.total+' pairs matched first time. '+bandText(pct)+'</p></div>';
+  if(M.wrongIds.size) h+='<p class="wordlist-inline">Mixed up: '+[...M.wrongIds].map(id=>'<b>'+BYID[id].la+'</b> ('+esc(BYID[id].en)+')').join(', ')+'.</p>';
+  h+='<div class="rowbtn" style="justify-content:center"><button class="btn gold" onclick="startMatch()">Another round</button><button class="btn ghost" onclick="goHome()">Back to menu</button></div>';
+  $('match-summary').innerHTML=h;
+}
+
+/* ====================================================================
+   PRACTISE 6 — SORT THE WORDS
+   ==================================================================== */
+const SO={placed:{},sel:null};
+function startSort(){
+  SO.placed={}; SO.sel=null; $('sort-summary').innerHTML=''; $('sort-fb').innerHTML=''; $('sort-check').disabled=true;
+  $('sort-chips').innerHTML=shuffle(WORDS).map(w=>'<button class="chip" data-id="'+w.id+'" onclick="sortSel(this)">'+w.la+'</button>').join('');
+  $('sort-bins').innerHTML=Object.keys(CATS).map(k=>'<button type="button" class="bin" data-cat="'+k+'" onclick="sortDrop(\''+k+'\')"><h4>'+CATS[k]+'</h4><div class="binchips"></div></button>').join('');
+  show('s-sort');
+}
+function sortSel(btn){ document.querySelectorAll('#sort-chips .chip.sel, .bin .chip.sel').forEach(c=>c.classList.remove('sel')); if(SO.sel===btn){ SO.sel=null; return; } SO.sel=btn; btn.classList.add('sel'); }
+function sortDrop(cat){
+  if(!SO.sel) return; const chip=SO.sel; chip.classList.remove('sel'); SO.sel=null;
+  document.querySelector('.bin[data-cat="'+cat+'"] .binchips').appendChild(chip); SO.placed[chip.dataset.id]=cat;
+  $('sort-check').disabled= Object.keys(SO.placed).length<WORDS.length;
+  $('sort-fb').innerHTML= Object.keys(SO.placed).length<WORDS.length ? '<span class="small">'+(WORDS.length-Object.keys(SO.placed).length)+' words still to place.</span>' : '<span class="small">All placed — check your sorting.</span>';
+}
+function checkSort(){
+  let c=0; const wrong=[];
+  WORDS.forEach(w=>{ const chip=document.querySelector('.chip[data-id="'+w.id+'"]'); const ok=SO.placed[w.id]===w.cat; chip.classList.add(ok?'ok':'bad'); chip.onclick=null; if(ok) c++; else wrong.push(w); recordWord(w.id, ok, false); });
+  const pct=Math.round(100*c/WORDS.length); recordRound('sort',c,WORDS.length); $('sort-check').disabled=true;
+  let h='<div class="center"><div class="bignum">'+pct+'%</div><p>'+c+' of '+WORDS.length+' in the right box. '+bandText(pct)+'</p></div>';
+  if(wrong.length) h+='<p class="wordlist-inline">Misplaced: '+wrong.map(w=>'<b>'+w.la+'</b> is '+esc(w.en)+' → <i>'+CATS[w.cat]+'</i>').join('; ')+'.</p>';
+  h+='<div class="rowbtn" style="justify-content:center"><button class="btn gold" onclick="startSort()">Try again</button><button class="btn ghost" onclick="goHome()">Back to menu</button></div>';
+  $('sort-summary').innerHTML=h;
+}
+
+/* ====================================================================
+   PRACTISE 8 — BEAT THE CLOCK (60 s)
+   ==================================================================== */
+const SP={t:60,correct:0,total:0,streak:0,best:0,cur:null,running:false};
+function showSprint(){ $('sprint-summary').innerHTML=''; $('sprint-timer').textContent='60'; $('sprint-timer').classList.remove('warn'); $('sprint-area').innerHTML='<button class="btn seal" onclick="beginSprint()">Start the clock</button>'; show('s-sprint'); }
+function beginSprint(){
+  SP.t=60; SP.correct=0; SP.total=0; SP.streak=0; SP.best=0; SP.running=true; $('sprint-summary').innerHTML=''; $('sprint-timer').textContent='60'; $('sprint-timer').classList.remove('warn');
+  const tm=setInterval(()=>{ SP.t--; $('sprint-timer').textContent=SP.t; if(SP.t<=10) $('sprint-timer').classList.add('warn'); if(SP.t<=0){ clearInterval(tm); sprintDone(); } },1000); TIMERS.push(tm);
+  nextSprint();
+}
+function nextSprint(){
+  if(!SP.running) return;
+  const w=weightedWord(); SP.cur=w; const ds=sample(WORDS,2,w).map(d=>d.en); const opts=shuffle([w.en].concat(ds)); SP.opts=opts;
+  $('sprint-area').innerHTML='<div class="bigword">'+w.la+(w.extra?' <small>'+w.extra+'</small>':'')+'</div><div class="opts two" style="max-width:560px;margin:10px auto">'+opts.map((o,i)=>'<button class="opt" onclick="sprintPick(this,'+i+')">'+esc(o)+'</button>').join('')+'</div><div class="small">Score '+SP.correct+' / '+SP.total+'<span class="streak">'+(SP.streak>=3?'🔥 streak '+SP.streak:'')+'</span></div>';
+}
+function sprintPick(btn,i){
+  if(!SP.running) return; const ok=(SP.opts[i]===SP.cur.en); SP.total++; if(ok){ SP.correct++; SP.streak++; SP.best=Math.max(SP.best,SP.streak); } else SP.streak=0;
+  recordWord(SP.cur.id, ok, false);
+  btn.classList.add(ok?'correct':'wrong'); btn.parentNode.querySelectorAll('.opt').forEach(o=>o.disabled=true);
+  setTimeout(nextSprint, ok?250:700);
+}
+function sprintDone(){
+  SP.running=false; const pct= SP.total? Math.round(100*SP.correct/SP.total):0;
+  $('sprint-area').innerHTML='';
+  if(SP.total<5){ $('sprint-summary').innerHTML='<div class="center"><p>Only '+SP.total+' answered — a round needs at least five answers to count.</p></div><div class="rowbtn" style="justify-content:center"><button class="btn gold" onclick="beginSprint()">Go again</button><button class="btn ghost" onclick="goHome()">Back to menu</button></div>'; return; }
+  recordRound('sprint',SP.correct,SP.total,{bestRun:Math.max(S.acts.sprint.bestRun||0,SP.correct)});
+  $('sprint-summary').innerHTML='<div class="center"><div class="bignum">'+SP.correct+'</div><p>correct in sixty seconds, from '+SP.total+' attempted — accuracy <b class="'+pctClass(pct)+'">'+pct+'%</b>. Best streak: '+SP.best+'.</p><p class="small">Aim for 20+ correct at 90% accuracy or better before you sit the test.</p></div><div class="rowbtn" style="justify-content:center"><button class="btn gold" onclick="beginSprint()">Go again</button><button class="btn ghost" onclick="goHome()">Back to menu</button></div>';
+}
+
+/* ====================================================================
+   TEST MODE — every word, typed, timed (META.testMinutes), no feedback until the end
+   ==================================================================== */
+const TEST={running:false,order:[],i:0,answers:[],secs:TEST_SECS,started:null};
+function showTest(){
+  $('test-intro').style.display='block'; $('test-run').style.display='none'; $('test-result').style.display='none';
+  const at=S.test.attempts; $('test-attempts').innerHTML= at.length? 'Previous attempts: '+at.map((a,i)=>'<span>#'+(i+1)+' · '+a.pct+'% · '+fmtSecs(a.secs)+'</span>').join('')+' &nbsp;Best: <b>'+S.test.best+'%</b>' : 'You have not sat this test yet.';
+  show('s-test');
+}
+function fmtSecs(s){ return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
+function startTest(){
+  TEST.running=true; TEST.order=shuffle(WORDS); TEST.i=0; TEST.answers=[]; TEST.secs=TEST_SECS; TEST.started=Date.now();
+  $('test-intro').style.display='none'; $('test-result').style.display='none'; $('test-run').style.display='block';
+  $('test-timer').classList.remove('warn');
+  const tm=setInterval(()=>{ TEST.secs=Math.max(0,TEST_SECS-Math.round((Date.now()-TEST.started)/1000)); $('test-timer').textContent=fmtSecs(TEST.secs); if(TEST.secs<=60) $('test-timer').classList.add('warn'); if(TEST.secs<=0){ clearInterval(tm); finishTest(false); } },500); TIMERS.push(tm);
+  $('test-inp').onkeydown=e=>{ if(e.key==='Enter'&&!e.repeat){ e.preventDefault(); if(Date.now()-(TEST.lastNext||0)>300) testNext(); } };
+  saveTestProgress(); renderTestQ();
+}
+function saveTestProgress(){ S.testInProgress= TEST.running? {order:TEST.order.map(w=>w.id), answers:TEST.answers, started:TEST.started} : null; saveLocal(); }
+/* A test interrupted by a refresh or a closed tab is resumed with the time it has left, or handed in if the clock has run out. */
+function resumeTestIfAny(){
+  const t=S.testInProgress; if(!t||!t.order) return false;
+  TEST.running=true; TEST.order=t.order.map(id=>BYID[id]).filter(Boolean); TEST.answers=t.answers||[]; TEST.i=TEST.answers.length; TEST.started=t.started||Date.now();
+  const left=TEST_SECS-Math.round((Date.now()-TEST.started)/1000);
+  show('s-test'); $('test-intro').style.display='none'; $('test-result').style.display='none';
+  if(left<=0 || TEST.i>=TEST.order.length){ $('test-run').style.display='none'; finishTest(false); return true; }
+  $('test-run').style.display='block'; $('test-timer').classList.remove('warn');
+  const tm=setInterval(()=>{ TEST.secs=Math.max(0,TEST_SECS-Math.round((Date.now()-TEST.started)/1000)); $('test-timer').textContent=fmtSecs(TEST.secs); if(TEST.secs<=60) $('test-timer').classList.add('warn'); if(TEST.secs<=0){ clearInterval(tm); finishTest(false); } },500); TIMERS.push(tm);
+  $('test-inp').onkeydown=e=>{ if(e.key==='Enter'&&!e.repeat){ e.preventDefault(); if(Date.now()-(TEST.lastNext||0)>300) testNext(); } };
+  renderTestQ(); return true;
+}
+window.addEventListener('beforeunload',function(e){ if(TEST.running){ e.preventDefault(); e.returnValue=''; } });
+function renderTestQ(){
+  const w=TEST.order[TEST.i]; $('test-q').textContent='Word '+(TEST.i+1)+' of '+TEST.order.length;
+  $('test-word').innerHTML=w.la+(w.extra?' <small>'+w.extra+'</small>':''); const inp=$('test-inp'); inp.value=''; inp.disabled=false; inp.focus();
+}
+function testNext(){
+  if(!TEST.running) return; const w=TEST.order[TEST.i]; const v=$('test-inp').value;
+  TEST.answers.push({id:w.id, typed:v, ok:checkEnglish(w,v,true), seen:1}); TEST.lastNext=Date.now();
+  TEST.i++; if(TEST.i>=TEST.order.length) finishTest(false); else { saveTestProgress(); renderTestQ(); }
+}
+function finishTest(abandoned){
+  if(!TEST.running) return; TEST.running=false; stopTimers();
+  /* the word on screen when the clock ran out keeps whatever was typed; words never reached are marked wrong but not held against the word */
+  if(TEST.i<TEST.order.length){ const w=TEST.order[TEST.i]; const v=($('test-inp')&&$('test-inp').value)||''; if(v.trim()||!abandoned){ TEST.answers.push({id:w.id, typed:v, ok:checkEnglish(w,v,true), seen:1}); TEST.i++; } }
+  for(let k=TEST.i;k<TEST.order.length;k++) TEST.answers.push({id:TEST.order[k].id, typed:'', ok:false, seen:0});
+  S.testInProgress=null;
+  const secs=Math.min(TEST_SECS,Math.round((Date.now()-TEST.started)/1000));
+  const score=TEST.answers.filter(a=>a.ok).length, total=TEST.order.length, pct=Math.round(100*score/total);
+  TEST.answers.forEach(a=>{ if(a.seen) recordWord(a.id,a.ok,true); });
+  const unseen=TEST.answers.filter(a=>!a.seen).length;
+  const att={pct,score,total,secs,at:new Date().toISOString(),wrong:TEST.answers.filter(a=>!a.ok&&a.seen).map(a=>a.id),unseen,answers:TEST.answers.map(a=>[a.id,a.typed,a.ok?1:0,a.seen?1:0]),abandoned:!!(abandoned||unseen)};
+  S.test.attempts.push(att); if(S.test.attempts.length>12) S.test.attempts=S.test.attempts.slice(-12);
+  S.test.latest=pct; S.test.best= S.test.best===null? pct : Math.max(S.test.best,pct);
+  recordRound('test',score,total);
+  /* results screen */
+  $('test-run').style.display='none';
+  let h='<div class="panel"><div class="tag seal">Test mode · Result</div><div class="center"><div class="bignum">'+pct+'%</div><p>'+score+' / '+total+' in '+fmtSecs(secs)+((abandoned||unseen)?' (handed in early — '+unseen+' word'+(unseen===1?'':'s')+' not reached)':'')+'. '+(pct===100?'Full marks — that is exactly what the paper test needs.':bandText(pct))+'</p></div>';
+  h+='<table class="results"><tr><th>Latin</th><th>You wrote</th><th>Meaning</th><th></th></tr>'+TEST.answers.map(a=>{const w=BYID[a.id];return '<tr class="'+(a.ok?'good':'bad')+'"><td class="lat">'+w.la+(w.extra?' <span class="small">'+w.extra+'</span>':'')+'</td><td>'+(a.typed?esc(a.typed):(a.seen?'<i class="small">blank</i>':'<i class="small">not reached</i>'))+'</td><td>'+esc(w.en)+'</td><td>'+(a.ok?'✓':'✗')+'</td></tr>';}).join('')+'</table>';
+  const wr=att.wrong;
+  if(wr.length) h+='<div class="copybox"><div class="lbl">Copy into your book</div><p class="small" style="margin:6px 0 0">Write out each word you missed three times with its meaning: '+wr.map(id=>'<b>'+BYID[id].la+'</b>').join(', ')+'.</p></div>';
+  h+='<div class="rowbtn" style="justify-content:center">'+(wr.length?'<button class="btn gold" onclick="startFlash(shuffle(['+wr.map(i=>'\''+i+'\'').join(',')+'].map(i=>BYID[i])))">Flashcards for the ones I missed</button>':'')+'<button class="btn seal" onclick="showTest()">Sit it again</button><button class="btn ghost" onclick="goHome()">Back to menu</button></div></div>';
+  $('test-result').innerHTML=h; $('test-result').style.display='block'; window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ====================================================================
+   CLOUD SYNC LAYER — same Vestigia store as every other tracked lesson.
+   Class code + name, no password. NOTE: no custom request headers — the
+   Worker's CORS allow-list rejects them and the browser would silently
+   block every save.
+   ==================================================================== */
+const CLOUD={ endpoint:"https://vestigia-store.mrbeasley930.workers.dev", book:META.book };
+const LESSON={ id:META.lessonId, title:META.lessonTitle };
+let IDENTITY=null;
+function userKey(){ return IDENTITY ? (IDENTITY.cls+"::"+IDENTITY.cand) : "anon"; }
+function fullKey(){ return CLOUD.book+"::"+userKey(); }
+const CloudStore={
+  async pull(){ if(!CLOUD.endpoint) return {ok:false};
+    try{ const r=await fetch(CLOUD.endpoint+"?key="+encodeURIComponent(fullKey())); if(r.status===404) return {ok:true,data:null}; if(!r.ok) return {ok:false};
+      const j=await r.json(); return {ok:true,data:(j&&j.data)?j.data:null}; }catch(e){ return {ok:false}; } },
+  async push(b){ if(!CLOUD.endpoint||!IDENTITY) return false;
+    try{ const r=await fetch(CLOUD.endpoint,{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({key:fullKey(),cls:IDENTITY.cls,cand:IDENTITY.cand,book:CLOUD.book,data:b,savedAt:new Date().toISOString()})}); return r.ok; }catch(e){ return false; } }
+};
+function progressSummary(){
+  const acts={}; ACTS.forEach(a=>{ const s=S.acts[a.id]; acts[a.id]={attempts:s.attempts,best:s.best,latest:s.latest,done:s.done,answered:s.answered,correct:s.correct,bestRun:s.bestRun||undefined}; });
+  const pp=practicePct();
+  return { name: IDENTITY?IDENTITY.cand:"", lesson:LESSON.id, title:LESSON.title, set:META.setLabel,
+           actsDone:actsDone(), actsTotal:ACTS.length, questions:S.questions, practicePct:pp,
+           testAttempts:S.acts.test.attempts, testBest:S.test.best, testLatest:S.test.latest,
+           /* compatibility with the generic lesson trackers: score/total/pct/done */
+           score:(S.test.best===null?(pp===null?0:pp):S.test.best), total:100, pct:(S.test.best===null?(pp===null?0:pp):S.test.best), done:(S.test.attempts.length>0),
+           acts, words:S.words, test:S.test, cards:S.cards||0, lastActive:S.lastActive, state:S,
+           savedAt:new Date().toISOString() };
+}
+let _mt=null, _syncOK=null, _dirty=false;
+function mirrorToCloud(){ if(!IDENTITY) return; _dirty=true; clearTimeout(_mt);
+  _mt=setTimeout(async()=>{ _dirty=false; _syncOK=await CloudStore.push(progressSummary()); if(!_syncOK) _dirty=true; setBadge(); }, 600); }
+function setBadge(){
+  try{ window.__vsBanner && window.__vsBanner(_syncOK===false?'offline':'cloud'); }catch(e){}
+  const el=$('cloudBadge'); if(!el) return;
+  if(_syncOK===false){ el.textContent='⚠ NOT SAVED — see the red bar at the top'; el.style.background='#8c2f24'; return; }
+  el.textContent='Synced · '+actsDone()+'/'+ACTS.length+' activities'+(S.test.best!==null?' · test '+S.test.best+'%':''); el.style.background= S.test.best!==null? '#3f6f3a':'#a8741f'; }
+
+/* ---- sign-in gate ---- */
+function showGate(){
+  const FIXEDCLS=String(META.classCode||'').trim().toUpperCase();
+  const ov=document.createElement('div'); ov.id='latin-gate';
+  ov.style.cssText="position:fixed;inset:0;z-index:99999;background:rgba(20,15,8,.93);display:flex;align-items:center;justify-content:center;padding:20px;font-family:Georgia,'Times New Roman',serif;";
+  ov.innerHTML=
+    '<div style="max-width:420px;width:100%;background:#f7f0de;border-top:8px solid #a8741f;border-radius:12px;padding:24px 26px;color:#2a2117;box-shadow:0 18px 50px rgba(0,0,0,.5);">'
+    +'<div style="font-size:12px;letter-spacing:2px;color:#8c2f24;font-weight:700;font-variant:small-caps;">'+esc(META.gateSeries)+'</div>'
+    +'<div style="font-size:23px;color:#2a2117;font-weight:700;margin:2px 0 4px;">'+esc(META.gateTitle)+'</div>'
+    +'<div style="font-size:13px;color:#5a4f3c;margin-bottom:16px;">Sign in so your scores are recorded for your teacher and follow you to any computer.</div>'
+    +'<label for="g-cls" style="font-size:13px;color:#8c2f24;font-weight:700;">Class code</label>'
+    +'<input id="g-cls" autocomplete="off" '+(FIXEDCLS?('value="'+esc(FIXEDCLS)+'" readonly tabindex="-1" '):('placeholder="'+esc(META.classHint)+'" '))+'style="width:100%;box-sizing:border-box;margin:5px 0 '+(FIXEDCLS?'4px':'12px')+';padding:10px;border-radius:7px;border:1px solid #c9b78f;background:'+(FIXEDCLS?'#ece3cc':'#fffdf5')+';color:#2a2117;font-size:15px;font-family:inherit;'+(FIXEDCLS?'cursor:default;':'')+'">'
+    +(FIXEDCLS?'<div style="font-size:11.5px;color:#7a6e57;margin:0 0 12px;">Your class code is filled in for you — leave it as it is. <span id="g-unlock" style="text-decoration:underline;cursor:pointer;">teacher: change it</span></div>':'')
+    +'<label for="g-cand" style="font-size:13px;color:#8c2f24;font-weight:700;">Your name</label>'
+    +'<input id="g-cand" autocomplete="off" placeholder="e.g. Marcus" style="width:100%;box-sizing:border-box;margin:5px 0 4px;padding:10px;border-radius:7px;border:1px solid #c9b78f;background:#fffdf5;font-size:15px;font-family:inherit;">'
+    +'<div id="g-err" style="color:#8c2f24;font-size:12.5px;min-height:17px;margin:3px 0 6px;"></div>'
+    +'<button id="g-go" style="width:100%;padding:12px;border:0;border-radius:7px;background:#8c2f24;color:#f7f0de;font-weight:700;font-size:15px;cursor:pointer;font-family:inherit;letter-spacing:1px;">Begin</button>'
+    +'<div style="font-size:11.5px;color:#7a6e57;margin-top:13px;line-height:1.5;">Use the <b>same spelling of your name</b> every time, so all your work lands in one place.</div>'
+    +'</div>';
+  document.body.appendChild(ov); document.querySelector('.wrap').inert=true;
+  $('g-go').addEventListener('click',signIn);
+  ov.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); signIn(); } });
+  if($('g-unlock')) $('g-unlock').addEventListener('click',function(){ const c=$('g-cls'); c.removeAttribute('readonly'); c.removeAttribute('tabindex'); c.style.background='#fffdf5'; c.style.cursor='text'; c.select(); this.parentNode.removeChild(this); });
+  (FIXEDCLS ? $('g-cand') : $('g-cls')).focus();
+}
+async function signIn(){
+  const cls=($('g-cls').value||'').trim().toUpperCase();
+  const cand=($('g-cand').value||'').trim().replace(/\s+/g,' ');
+  const err=$('g-err');
+  if(_signingIn) return;
+  if(!cls){ err.textContent='Enter your class code.'; return; }
+  if(!/^.{2,40}$/.test(cand)){ err.textContent='Please enter your name (2-40 characters).'; return; }
+  _signingIn=true; IDENTITY={cls:cls,cand:cand}; $('g-go').textContent='Loading your progress…'; $('g-go').disabled=true;
+  loadLocal();
+  const res=await Promise.race([CloudStore.pull(), new Promise(r=>setTimeout(()=>r({ok:false}),6000))]);
+  if(res.ok && res.data && res.data.state) mergeState(res.data.state);
+  saveLocal();
+  const g=$('latin-gate'); if(g) g.remove(); document.querySelector('.wrap').inert=false;
+  injectBadge();
+  if(!res.ok){ _syncOK=false; setBadge(); } else if(S.lastActive){ mirrorToCloud(); } else setBadge();
+  if(!resumeTestIfAny()) renderHub();
+}
+let _signingIn=false;
+function signOut(){ if(TEST.running){ if(!confirm('You are in the middle of the test. Hand it in now and switch user?')) return; finishTest(true); } IDENTITY=null; location.reload(); }
+function injectBadge(){
+  if($('cloudBadge')) return;
+  const b=document.createElement('div'); b.id='cloudBadge'; b.className='cloudBadge';
+  b.title="Signed in: "+IDENTITY.cls+" · "+IDENTITY.cand+" — click to switch user";
+  b.textContent="Synced";
+  b.addEventListener('click',function(){ if(confirm('Switch user? Your progress is already saved.')) signOut(); });
+  document.body.appendChild(b);
+}
+function applyMeta(){
+  document.title=META.pageTitle||(META.series+' — '+META.setLabel+' vocabulary homework');
+  $('brand').textContent='✦ '+META.series+' · Vocabulary ✦';
+  $('hubtag').textContent=META.setLabel+' · Vocabulary Homework'; $('hubtitle').textContent=META.title; $('hubsub').innerHTML=META.subtitle||'';
+  $('footer').textContent=META.footer||''; $('listtitle').textContent=META.listTitle||(META.setLabel+': the words'); $('copyinstr').innerHTML=META.copyInstruction||'';
+  $('testtitle').textContent='Vocabulary test: '+META.setLabel; $('testheadlabel').textContent='Vocabulary test · '+META.setLabel; $('testmins').textContent=META.testMinutes||10;
+  document.querySelectorAll('.nwords').forEach(e=>e.textContent=WORDS.length);
+  const nr=Math.ceil(WORDS.length/5); $('matchrounds').textContent=nr+' round'+(nr>1?'s':'')+' of up to five.';
+}
+applyMeta(); renderHub();
+showGate();
+</script>
+
+<!-- ===== SAVE-FAILURE BANNER (added 2026-09-04) =====
+     Homework is done unsupervised, so a failed save has to be impossible to
+     miss: the corner pill alone was not enough. Driven from setBadge()'s
+     _syncOK flag; clears itself the moment a save succeeds. -->
+<script>
+window.__vsBanner = function(state){
+  try{
+    if(state === 'saving') return;
+    var on = (state === 'offline');
+    var b = document.getElementById('vs-savefail');
+    if(!b){
+      if(!on) return;
+      b = document.createElement('div');
+      b.id = 'vs-savefail';
+      b.setAttribute('role','alert');
+      b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:2147483647;'
+        + 'background:#b3261e;color:#fff;font-family:Georgia,"Times New Roman",serif;'
+        + 'font-size:15px;line-height:1.5;padding:11px 18px;text-align:center;'
+        + 'box-shadow:0 3px 14px rgba(0,0,0,.45);';
+      b.innerHTML = '<b>NOT SAVED &mdash; your teacher will not see this work.</b> It is safe on '
+        + 'this computer. Check you are online; if the bar is still here after that, '
+        + 'tell your teacher before the deadline.'
+        + '<div style="font-size:12.5px;opacity:.9;margin-top:3px;">Keep going &mdash; '
+        + 'this clears itself the moment it reconnects.</div>';
+      (document.body || document.documentElement).appendChild(b);
+    }
+    b.style.display = on ? 'block' : 'none';
+    if(document.body) document.body.style.paddingTop = on ? (b.offsetHeight + 6) + 'px' : '';
+  }catch(e){}
+};
+</script>
+</body>
+</html>
